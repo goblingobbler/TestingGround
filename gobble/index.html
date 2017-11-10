@@ -1,0 +1,231 @@
+<html>
+<head>
+    <!--<link href='http://fonts.googleapis.com/css?family=Raleway:%20400,100,800,900,700,600,500,200,300' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">-->
+<style>
+    body {overflow: hidden;}
+    .viewport {
+        width: 100%;
+        height: 100%;
+        background: none;
+    }
+    .gameboard {
+        position:absolute;
+        z-index:-1;
+        background: #eee;
+        top: 0px;
+        left: 0px;
+    }
+    .circle {
+        border-radius:10000px;
+        background:black;
+        position: absolute;
+    }
+    .circle.white {
+        background: white;
+    }
+    .tile {
+        display: inline-block;
+        border-bottom: thin solid black;
+        border-right: thin solid black;
+    }
+    .info {
+        position:fixed;
+        top:0px;
+        left:0px;
+        z-index:10;
+        background:white;
+    }
+
+    .player {
+
+    }
+
+    .food {
+        position: absolute;
+        height: 10px;
+        width: 10px;
+        background: green;
+    }
+
+</style>
+</head>
+
+
+<body>
+
+<div class="viewport">
+<div class="info">
+    <div class="playerDir"></div>
+</div>
+</div>
+
+<div class="gameboard transitions">
+
+</div>
+
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
+<script src="static/jquery.min.js"></script>
+<script src="static/jquery-collision.js"></script>
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
+<script>
+var CENTER = {};
+var MOUSE = {};
+var SPEED = 8;
+var INITSIZE = 10;
+var WORLDSCALE = 500;
+var WORLDSIZE = 0;
+
+var COUNTER = 0;
+var FOODCOUNTER = 0;
+var FOODLIST = [];
+for (var i=0; i<100; i++){FOODLIST.push([]);}
+
+var PLAYER = undefined;
+
+$(document).ready(function(){
+    CENTER = {'x':$(window).width()/2, 'y':$(window).height()/2};
+
+	$('.viewport').append('<div class="circle player"></div>');
+
+    PLAYER = player();
+
+    WORLDSIZE = scale($(window).width());
+    $('.gameboard').width(WORLDSIZE);
+    $('.gameboard').height(WORLDSIZE);
+    for (var i=0; i<10; i++){
+        for (var j=0; j<10; j++){
+            $('.gameboard').append('<div class="tile"></div>');
+        }
+    }
+    $('.tile').height(WORLDSIZE/10 - 1);
+    $('.tile').width(WORLDSIZE/10 - 1);
+
+
+	$('body').on( "mousemove", function(event){
+	    MOUSE = {'x': event.pageX, 'y': event.pageY};
+        var x = MOUSE.x - CENTER.x
+        var y = MOUSE.y - CENTER.y
+        PLAYER.direction =  {'x': x/(Math.abs(x)+Math.abs(y)), 'y': y/(Math.abs(x)+Math.abs(y))};
+        $('.playerDir').html(PLAYER.direction.x + ' : ' + PLAYER.direction.y);
+	});
+
+	$('body').on( "mouseleave", function(event){
+
+	});
+
+    update();
+});
+
+function scale(val){
+    return (val*$(window).width())/WORLDSCALE;
+}
+
+function player(){
+    player = {};
+    player.obj = $('.player');
+
+    player.speed = SPEED;
+    player.size = INITSIZE;
+    player.direction = {'x':0,'y':0}
+    player.position = {'x':0, 'y':0}
+
+    player.grow = function(){
+        player.obj.css('width',scale(player.size));
+        player.obj.css('height',scale(player.size));
+
+        player.obj.css('top',CENTER.y - (scale(player.size)/2));
+        player.obj.css('left',CENTER.x - (scale(player.size)/2));
+    }
+    player.grow();
+
+    player.radius = function (){return scale(player.size)/2;}
+
+    player.move = function(){
+        var top = parseInt($('.gameboard').css('top')) - (player.direction.y*player.speed);
+        var left = parseInt($('.gameboard').css('left')) - (player.direction.x*player.speed);
+
+        if (top > CENTER.y){top = CENTER.y;} else if (top < -1*(WORLDSIZE-CENTER.y)){top = -1*(WORLDSIZE-CENTER.y);}
+        if (left > CENTER.x){left = CENTER.x;} else if (left < -1*(WORLDSIZE-CENTER.x)){left = -1*(WORLDSIZE-CENTER.x);}
+
+        player.position = {'x': CENTER.x - left, 'y': CENTER.y - top};
+
+        $('.gameboard').css('top',top);
+        $('.gameboard').css('left',left);
+    }
+
+    return player;
+}
+
+function createFood(x,y){
+    var f = {};
+    f.position = {'x':x,'y':y}
+    f.obj = $('<div class="food"></div>');
+    $('.gameboard').append(f.obj);
+
+    f.radius = function(){ return 5;}
+
+    f.obj.css('left',x);
+    f.obj.css('top',y);
+
+    var left = parseInt(10*(x/WORLDSIZE))*10;
+    var top = parseInt(10*(y/WORLDSIZE));
+    FOODLIST[left+top].push(f);
+
+    return f;
+}
+
+
+function update(){
+    COUNTER += 16;
+    PLAYER.move();
+
+    if (COUNTER/200 > FOODCOUNTER){
+        createFood(parseInt(Math.random()*WORLDSIZE),parseInt(Math.random()*WORLDSIZE));
+        FOODCOUNTER += 1;
+    }
+
+    var hitlist = collisionDetect([0,1,2,10,11,12]);
+    if (hitlist.length > 0){
+        console.log('a');
+        for (var i=0; i<hitlist.length; i++){
+            hitlist[i].obj.remove();
+            player.size += 2;
+            player.grow();
+        }
+
+    }
+    setTimeout(function(){
+        update();
+    },16);
+}
+
+function collisionDetect(fields){
+    var hitlist = [];
+    for (var x=0; x<fields.length; x++){
+        var i = fields[x];
+
+        for (var j=0; j<FOODLIST[i].length; j++){
+            var x1 = (Math.abs(PLAYER.position.x - FOODLIST[i][j].position.x)*100)/WORLDSIZE;
+            var x2 = (Math.abs(PLAYER.position.y - FOODLIST[i][j].position.y)*100)/WORLDSIZE;
+
+            var distance = (Math.sqrt(x1*x1 + x2*x2)*WORLDSIZE)/100;
+
+            if (distance < PLAYER.radius() + FOODLIST[i][j].radius()){
+                hitlist.push(FOODLIST[i].splice(j,1)[0]);
+            }
+        }
+    }
+    return hitlist;
+}
+
+</script>
+
+</body>
+</html>

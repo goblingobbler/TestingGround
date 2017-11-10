@@ -1,0 +1,116 @@
+ * Running on http://127.0.0.1:14270/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 198-411-053
+[-] register_background_thread called
+[-] register_background_thread: initial registration
+[+] Locale is en
+[+] Getting initial location
+[!] Your given location: 10240 Rifle St, Commerce City, CO 80022, USA
+[!] lat/long/alt: 39.8818606 -104.7852566 0.0
+[!] PTC login for: goblingobbler
+[+] RPC Session Token: TGT-1701630-x6ccT2fvwXzmE ...
+[+] Received API endpoint: https://pgorelease.nianticlabs.com/plfe/556/rpc
+[+] Login successful
+[+] Username: dmiller89
+[+] You started playing Pokemon Go on: 2016-07-20 21:50:34
+[+] POKECOIN: 0
+[+] STARDUST: 0
+[-] looping: step 1 of 25
+[+] Searching for Pokemon at location 39.8818606 -104.7852566
+Completed: 4.0%
+[-] looping: step 2 of 25
+[+] Searching for Pokemon at location 39.8843606 -104.7852566
+Completed: 8.0%
+[-] looping: step 3 of 25
+[+] Searching for Pokemon at location 39.8843606 -104.7827566
+Completed: 12.0%
+[-] looping: step 4 of 25
+[+] Searching for Pokemon at location 39.8818606 -104.7827566
+Completed: 16.0%
+[-] looping: step 5 of 25
+[+] Searching for Pokemon at location 39.8793606 -104.7827566
+Completed: 20.0%
+[-] looping: step 6 of 25
+[+] Searching for Pokemon at location 39.8793606 -104.7852566
+Completed: 24.0%
+[-] looping: step 7 of 25
+[+] Searching for Pokemon at location 39.8793606 -104.7877566
+Completed: 28.0%
+[-] looping: step 8 of 25
+[+] Searching for Pokemon at location 39.8818606 -104.7877566
+Completed: 32.0%
+[-] looping: step 9 of 25
+[+] Searching for Pokemon at location 39.8843606 -104.7877566
+Completed: 36.0%
+[-] looping: step 10 of 25
+[+] Searching for Pokemon at location 39.8868606 -104.7877566
+Completed: 40.0%
+[-] looping: step 11 of 25
+[+] Searching for Pokemon at location 39.8868606 -104.7852566
+Completed: 44.0%
+[-] looping: step 12 of 25
+[+] Searching for Pokemon at location 39.8868606 -104.7827566
+Completed: 48.0%
+[-] looping: step 13 of 25
+[+] Searching for Pokemon at location 39.8868606 -104.7802566
+Completed: 52.0%
+[-] looping: step 14 of 25
+[+] Searching for Pokemon at location 39.8843606 -104.7802566
+Completed: 56.0%
+[-] looping: step 15 of 25
+[+] Searching for Pokemon at location 39.8818606 -104.7802566
+Completed: 60.0%
+[-] looping: step 16 of 25
+[+] Searching for Pokemon at location 39.8793606 -104.7802566
+Completed: 64.0%
+[-] looping: step 17 of 25
+[+] Searching for Pokemon at location 39.8768606 -104.7802566
+Completed: 68.0%
+[-] looping: step 18 of 25
+[+] Searching for Pokemon at location 39.8768606 -104.7827566
+Completed: 72.0%
+[-] looping: step 19 of 25
+[+] Searching for Pokemon at location 39.8768606 -104.7852566
+Completed: 76.0%
+[-] looping: step 20 of 25
+[+] Searching for Pokemon at location 39.8768606 -104.7877566
+Completed: 80.0%
+[-] looping: step 21 of 25
+[+] Searching for Pokemon at location 39.8768606 -104.7902566
+Completed: 84.0%
+[-] looping: step 22 of 25
+[+] Searching for Pokemon at location 39.8793606 -104.7902566
+Completed: 88.0%
+[-] looping: step 23 of 25
+[+] Searching for Pokemon at location 39.8818606 -104.7902566
+Completed: 92.0%
+[-] looping: step 24 of 25
+[+] Searching for Pokemon at location 39.8843606 -104.7902566
+Completed: 96.0%
+[-] looping: step 25 of 25
+[+] Searching for Pokemon at location 39.8868606 -104.7902566
+Completed: 100.0%
+[-] register_background_thread called
+[-] register_background_thread: queueing
+[+] Locale is en
+[+] removing stale pokemon Pidgey at 39.879333, -104.787237 from list
+[+] removing stale pokemon Pidgey at 39.881263, -104.787511 from list
+[+] removing stale pokemon Rattata at 39.881286, -104.787328 from list
+[+] removing stale pokemon Pidgey at 39.885260, -104.780946 from list
+[+] removing stale pokemon Pidgey at 39.879815, -104.788969 from list
+[+] removing stale pokemon Pidgey at 39.878705, -104.785414 from list
+[+] removing stale pokemon Pidgey at 39.886035, -104.787693 from list
+[+] removing stale pokemon Pidgeotto at 39.882478, -104.787237 from list
+[-] looping: step 1 of 25
+[+] Searching for Pokemon at location 39.8818606 -104.7852566
+Completed: 4.0%
+[-] looping: step 2 of 25
+[+] Searching for Pokemon at location 39.8843606 -104.7852566
+Completed: 8.0%
+[-] looping: step 3 of 25
+[+] Searchin * Running on http://127.0.0.1:14370/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 198-411-053
+127.0.0.1 - - [21/Jul/2016 01:18:33] "GET / HTTP/1.0" 200 -

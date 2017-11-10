@@ -1,0 +1,339 @@
+<html>
+<head>
+    <script src="file:///C:/Users/dmill/OneDrive/Documents/personal/static/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+    <style>
+        body {
+            overflow: hidden;
+            position: relative;
+        }
+        .pixel_box {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+        }
+        .pixel {
+            height: 20px;
+            width: 20px;
+            float:left;
+            display: inline-block;
+        }
+
+        .transitions {
+            transition: all .1s;
+            -moz-transition: all .1s;
+            -webkit-transition: all .1s;
+            -o-transition: all .1s;
+        }
+
+        .controls {
+            display: inline-block;
+            position: fixed;
+            right:0px;
+            top:0px;
+            background: rgba(0,0,0,.8);
+            border: thin solid black;
+            color:white;
+        }
+
+        .fps_meter {
+            display:inline-block;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="pixel_box">
+
+</div>
+
+<div class="controls">
+    FPS:<div class="fps_meter"></div><br>
+
+    <div>Mouse Effects:</div>
+    <div class="btn-group-vertical" data-toggle="buttons">
+        <label class="btn btn-primary active" onclick="offset_function=undefined;">
+            <input type="radio" checked>None
+        </label>
+        <label class="btn btn-primary" onclick="offset_function=mouse_darken;">
+            <input type="radio">Darken
+        </label>
+    </div>
+    <br>
+
+    <div>Colors:</div>
+    <div class="btn-group-vertical" data-toggle="buttons">
+        <label class="btn btn-primary active" onclick="display_arg=['red','green']">
+            <input type="radio" checked>Red-Green
+        </label>
+        <label class="btn btn-primary" onclick="display_arg=['green','blue']">
+            <input type="radio">Green-Blue
+        </label>
+        <label class="btn btn-primary" onclick="display_arg=['blue','red']">
+            <input type="radio">Blue-Red
+        </label>
+    </div>
+    <br>
+
+    <div>Display Mode:</div>
+    <div class="btn-group-vertical" data-toggle="buttons">
+        <label class="btn btn-primary active" onclick="display_function=gradient;">
+            <input type="radio" checked>Gradient
+        </label>
+        <label class="btn btn-primary" onclick="display_function=radial;">
+            <input type="radio">Radial
+        </label>
+    </div>
+
+
+</div>
+
+<script>
+var pixel_size = 20;
+
+var center = [0,0];
+var count = 0;
+
+var mouse = [0,0];
+var mouse_pixel = [0,0];
+var mouse_percent = [0,0];
+
+var limits = [0,0];
+var grid_size = [0,0];
+
+var pixels = [];
+var pixel_offset = [];
+
+var display_function = undefined;
+var display_arg = undefined;
+var offset_function = undefined;
+
+$(document).ready(function(){
+	center = [$(window).width()/2, $(window).height()/2];
+	limits = [$(window).width(), $(window).height()];
+
+	$('.center').each(function(){
+		$(this).css('top',center[1] - $(this).height()/2);
+		$(this).css('left',center[0] - $(this).width()/2);
+	})
+
+	$('body').on( "mousemove", function(event){
+		mouse = [event.pageX,event.pageY]
+		mouse_pixel = [Math.floor(mouse[0]/20), Math.floor(mouse[1]/20)];
+		mouse_percent = [mouse[0]/limits[0],mouse[1]/limits[1]];
+	});
+
+	$('body').on( "mouseleave", function(event){
+
+	});
+
+	create_pixels();
+	create_darken_grid();
+
+    display_function = gradient;
+    display_arg = ['red','green'];
+
+    //offset_function = mouse_darken;
+
+	update_time();
+});
+
+var pixel_string = '<div class="pixel" ></div>';
+function create_pixels(){
+    for (var j=0; j<=(limits[1]/pixel_size); j++){
+        pixels.push([]);
+        pixel_offset.push([]);
+
+        for (var i=0; i<=(limits[0]/pixel_size); i++){
+            var pixel = {'x':i,'y':j};
+            pixel.obj = $(pixel_string);
+            $('.pixel_box').append(pixel.obj);
+
+            pixels[j].push(pixel);
+            pixel_offset[j].push([0,0,0]);
+
+            max_i = i;
+            max_j = j;
+        }
+    }
+
+    $('.pixel_box').width((max_i+1) * pixel_size);
+    $('.pixel_box').height((max_j+1) * pixel_size);
+
+    grid_size = [pixels[0].length, pixels.length];
+}
+
+function gradient(colors){
+    var c1 = colors[0];
+    var c2 = colors[1];
+    var r = 0;
+    var g = 0;
+    var b = 0;
+
+    var x_increment = Math.floor(255/grid_size[0]);
+    var y_increment = Math.floor(255/grid_size[1]);
+
+    for (var i=0; i<grid_size[0]; i++){
+        for (var j=0; j<grid_size[1]; j++){
+            if (c1=='red'){r = (i*x_increment);}
+            else if (c1=='green'){g = (i*x_increment);}
+            else if (c1=='blue'){b = (i*x_increment);}
+
+            if (c2=='red'){r = (j*y_increment);}
+            else if (c2=='green'){g = (j*y_increment);}
+            else if (c2=='blue'){b = (j*y_increment);}
+
+            var color = 'rgb('+r+','+g+','+b+')';
+            background(pixels[j][i], color);
+        }
+    }
+}
+
+function radial(colors){
+    var c1 = colors[0];
+    var c2 = colors[1];
+    var r = 0;
+    var g = 0;
+    var b = 0;
+
+    var x_increment = Math.floor(255/(grid_size[0]/2));
+    var y_increment = Math.floor(255/(grid_size[1]/2));
+
+    var center_pixel = [Math.floor(pixels.length/2), Math.floor(pixels[0].length/2)];
+
+    for (var i=0; i<grid_size[0]; i++){
+        for (var j=0; j<grid_size[1]; j++){
+            var y = Math.abs(center_pixel[0]-j);
+            var x = Math.abs(center_pixel[1]-i);
+
+            if (c1=='red'){r = (x*x_increment + y*y_increment);}
+            else if (c1=='green'){g = (x*x_increment + y*y_increment);}
+            else if (c1=='blue'){b = (x*x_increment + y*y_increment);}
+
+            if (c2=='red'){r = 255- (x*x_increment + y*y_increment);}
+            else if (c2=='green'){g = 255-(x*x_increment + y*y_increment);}
+            else if (c2=='blue'){b = 255-(x*x_increment + y*y_increment);}
+
+            var color = 'rgb('+r+','+g+','+b+')';
+            background(pixels[j][i], color);
+        }
+    }
+}
+
+var MAX_DARKEN_DIST = 6;
+var DARKEN_GRID = []
+function create_darken_grid(){
+    var length = MAX_DARKEN_DIST *2 + 1;
+
+    for (var i=0; i<length; i++){
+        DARKEN_GRID.push([]);
+        for (var j=0; j<length; j++){
+            var dist = Math.sqrt(Math.pow(i-MAX_DARKEN_DIST,2) + Math.pow(j-MAX_DARKEN_DIST,2));
+            if (dist < MAX_DARKEN_DIST){
+                dark_percent = dist/MAX_DARKEN_DIST;
+            } else {
+                dark_percent = 1;
+            }
+
+            DARKEN_GRID[i].push(dark_percent);
+        }
+    }
+}
+
+function mouse_darken(){
+    var x = mouse_pixel[0] - MAX_DARKEN_DIST;
+    var y = mouse_pixel[1] - MAX_DARKEN_DIST;
+
+    for (var j=0; j<DARKEN_GRID.length; j++){
+        for (var i=0; i<DARKEN_GRID[0].length; i++){
+            if (x+i >= 0 && y+j >= 0 && x+i < pixels[0].length && y+j < pixels.length){
+                var darken = DARKEN_GRID[i][j];
+                var pixel = pixels[y+j][x+i];
+
+                var colors = pixel.colors.slice();
+                for (c in colors){
+                    colors[c] = Math.floor(colors[c]*darken);
+                }
+
+                var color = 'rgb('+colors[0]+','+colors[1]+','+colors[2]+')';
+                background(pixel, color);
+            }
+        }
+    }
+}
+
+//UTILITY FUNCTIONS
+
+hex_codes = '0123456789abcdef';
+function hex_to_rgb(hex){
+    if (hex.length == 4){
+        hex = hex[0] + hex[1] + hex[1] + hex[2]+ hex[2]+ hex[3]+ hex[3];
+    }
+    var r = hex_number(hex.slice(1,3));
+    var g = hex_number(hex.slice(3,5));
+    var b = hex_number(hex.slice(5,7));
+
+    var rgb = 'rgb('+r+','+g+','+b+')';
+    return rgb
+}
+function hex_number(hex){
+    return hex_codes.indexOf(hex[1]) + hex_codes.length * (hex_codes.indexOf(hex[0]))
+}
+
+function rgb_to_hex(rgb){
+    var temp = rgb.slice(4,-1);
+    var colors = temp.split(',');
+
+    return '#' + number_hex(colors[0]) + number_hex(colors[1]) + number_hex(colors[2])
+}
+function number_hex(number){
+    number = parseInt(number);
+    return hex_codes[parseInt(number/hex_codes.length)] + hex_codes[parseInt(number%hex_codes.length)]
+}
+
+function update_time(){
+	var tic = Date.now();
+	var count = 0;
+
+    if (typeof(display_function) != 'undefined'){
+        display_function(display_arg);
+    }
+    if (typeof(offset_function) != 'undefined'){
+        offset_function();
+    }
+
+    var toc = Date.now() - tic;
+
+    if (toc > 16){var fps = Math.floor(1000/toc);} else {var fps = 60;}
+    $('.fps_meter').html(fps);
+
+    var timer = 16-toc;
+    if (timer < 0){timer = 0;}
+    setTimeout(function(){update_time();},timer);
+}
+
+
+
+// PIXEL FUNCTIONS
+function background(self, color){
+    if (color != self.color){
+        self.color = color;
+        var temp = color.slice(4,-1);
+        self.colors = temp.split(',');
+
+        self.obj.css('background',color);
+
+    }
+}
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+
+
+.transitions, .gamePiece {
+	transition: all .4s;
+	-moz-transition: all .4s; 
+	-webkit-transition: all .4s;
+	-o-transition: all .4s;
+}
+
+.gameboard {
+	width: 90%;
+	height: 800px;
+	border: thin black solid;
+	margin: 0px auto;
+	position: relative;
+}
+
+.gamePiece { 
+	width: 30px; 
+	height: 30px; 
+	padding: 0.5em; 
+	background: green;
+	position: absolute;
+}
+.gamePiece.selected { 
+	background: red;
+}
+
+.circle {
+	position:absolute;
+	border: thin solid black;
+	border-radius: 100px;
+}
+.instructions {
+	text-align: center;
+	font-size: 2em;
+	color: grey;
+}

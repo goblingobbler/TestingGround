@@ -1,0 +1,151 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<style>
+.text {
+	font-size: 1em;
+	font-family: Helvetica, sans serif;
+}
+.active {
+	font-size: 2em;
+}
+
+.center {
+	border:thin solid black;
+	position: absolute;
+	border-radius: 1000px;
+}
+.hour, .minute, .second {
+	position: absolute;
+	background: rgba(255,255,255,.8);
+	border-radius:100px;
+}
+.hour, .minute, .second, .text {
+	transition: all 1s;
+	-moz-transition: all 1s; 
+	-webkit-transition: all 1s;
+	-o-transition: all 1s;
+}
+.hour {
+	font-size: 1em;
+}
+.minute {
+	font-size: 1.2em;
+}
+.second {
+	font-size: 2em;
+}
+</style>
+</head>
+
+
+<body>
+<div class='center'></div>
+<script>
+var center = [0,0];
+var count = 29;
+var mouse = [0,0];
+var r = [$(window).height()*.05,$(window).height()*.3,$(window).height()*.4];
+$(document).ready(function(){
+	center = [$(window).width()/2, $(window).height()/2];
+	$('.center').each(function(){
+		$(this).css('top',center[1] - $(this).height()/2);
+		$(this).css('left',center[0] - $(this).width()/2);
+	})
+	
+	var angle = 0;
+	var y = 0;
+	
+	for (var i=1; i<13; i++){
+		$('body').append("<div class='hour "+i+"' num='"+angle+"'><div class='text'>"+i+"</div></div>");
+		angle = (((360/12)*i - 90)/360) * 2*Math.PI;
+		y = Math.sin(angle)*r[0];
+		x = Math.cos(angle)*r[0];
+		$('.hour.'+i).css('top',y + center[1] - $('.hour.'+i).height()/2);
+		$('.hour.'+i).css('left',x + center[0] - $('.hour.'+i).width()/2);
+	}
+	for (var i=1; i<61; i++){
+		angle = (((360/60)*i - 90)/360) * 2*Math.PI;
+		$('body').append("<div class='minute "+i+"' num='"+angle+"'><div class='text'>"+i+"</div></div>");
+		y = Math.sin(angle)*r[1];
+		x = Math.cos(angle)*r[1];
+		$('.minute.'+i).css('top',y + center[1] - $('.minute.'+i).height()/2);
+		$('.minute.'+i).css('left',x + center[0] - $('.minute.'+i).width()/2);
+		
+		$('body').append("<div class='second "+i+"' num='"+angle+"'><div class='text'>"+i+"</div></div>");
+		y = Math.sin(angle)*r[2];
+		x = Math.cos(angle)*r[2];
+		$('.second.'+i).css('top',y + center[1] - $('.second.'+i).height()/2);
+		$('.second.'+i).css('left',x + center[0] - $('.second.'+i).width()/2);
+	}
+	
+		
+	$('body').on( "mousemove", function(event){
+		mouse = [event.pageX,event.pageY]
+		
+		var xrot = mouse[1]/(center[1]*2);
+		var yrot = mouse[0]/(center[0]*2);
+		var angle = (xrot + yrot)/2*180;
+		if (xrot > 1){xrot = 1;}
+		if (yrot > 1){yrot = 1;}
+		$('.blue').css('transform','rotate3d('+xrot+','+yrot+','+0+',-'+angle+'deg)');
+		
+	});
+	$('body').on( "mouseleave", function(event){
+		
+	});
+	
+	updateTime();
+	setInterval(function(){
+		updateTime();},1000);
+});
+
+function updateTime(){
+	var d = new Date(); // for now
+	var hour = d.getHours()%12; // => 9
+	if (hour == 0){hour = 12;}
+	var minute = d.getMinutes(); // =>  30
+	if (minute == 0){minute = 60;}
+	var second = d.getSeconds(); // => 51
+	if (second == 0){second = 60;}
+	$('.hour .text').removeClass('active');
+	$('.minute .text').removeClass('active');
+	$('.second .text').removeClass('active');
+	$('.hour.'+hour+' .text').addClass('active');
+	$('.minute.'+minute+' .text').addClass('active');
+	$('.second.'+second+' .text').addClass('active');
+	
+	var count = 0;
+	/*$('.active').parent().each(function(){
+		if ($(this).hasClass('hour')){count = 0;}
+		else if ($(this).hasClass('minute')){count = 1;}
+		else {count = 2;}
+		
+		console.log($(this).attr('num'));
+		var y = Math.sin($(this).attr('num'))*r[count];
+		var x = Math.cos($(this).attr('num'))*r[count];
+		$(this).css('top',y + center[1] - $(this).height());
+		$(this).css('left',x + center[0] - $(this).width());
+		
+	});*/
+	
+	
+	for (var i=0; i<12; i++){
+		var x = hour-i;
+		if (x <= 0){x = 12 + x;}
+		$('.hour.'+x).css('opacity',1-i/6);
+	}
+	for (var i=0; i<60; i++){
+		var x = minute-i;
+		if (x <= 0){x = 60 + x;}
+		$('.minute.'+x).css('opacity',1-i/30);
+		
+		var x = second-i;
+		if (x <= 0){x = 60 + x;}
+		$('.second.'+x).css('opacity',1-i/30);
+	}
+}
+
+</script>
+</body>
+</html>

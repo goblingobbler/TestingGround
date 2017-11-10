@@ -1,0 +1,93 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<style>
+body {
+	
+}
+.saved {
+	position:absolute;
+	width: 20%;
+	right:0px;
+	top: 0px;
+	overflow:auto;
+	overflow-x: hidden;
+}
+.color {
+	transition: all .4s;
+	-moz-transition: all .4s; 
+	-webkit-transition: all .4s;
+	-o-transition: all .4s;
+	
+	width:100%;
+	border-top-left-radius:4px;
+	border-bottom-left-radius:4px;
+	padding:10px;
+	position:relative;
+	left: 100%;
+}
+.intro {
+	background:white;
+	display: inline-block;
+	padding: 10px;
+	font-family: sans-serif;
+	border-bottom-right-radius: 4px;
+	box-shadow: 1px 1px 4px 2px white;
+}
+</style>
+</head>
+
+<body style='margin:0px;'>
+<div class='intro'>
+<h3 style='margin-top:0px;'>Color Explorer</h3>
+<div>X-Axis: Red <span class='red'></span></div>
+<div>y-Axis: Green <span class='green'></span></div>
+<div>Scrollwheel: Blue <span class='blue'></span></div>
+<div>Click to save :)</div>
+</div>
+<div class='saved'></div>
+
+<script>
+var size = [0,0];
+var count = 29;
+var red = 0;
+var green = 0;
+var blue = 0;
+$(document).ready(function(){
+	$('body').on( "mousemove", function(event){
+		red = 255*(event.pageX/size[0]);
+		green = 255*(event.pageY/size[1]);
+		
+		update();
+	});
+	$('body').on( 'mousewheel', function(e) {
+		if(e.originalEvent.wheelDelta / 120 > 0) {
+			blue -= 10;
+			if (blue<0){blue = 0;}
+		} else {
+			blue += 10;
+			if (blue>255){blue = 255;}
+		}
+		update();
+	});
+	
+	$('body').on( 'click', function(e) {
+		$('.saved').append('<div class="color" style="background:rgba('+parseInt(red)+','+parseInt(green)+','+blue+',1);">rgba('+parseInt(red)+','+parseInt(green)+','+blue+',1)</div>');
+		setTimeout(function(){$('.color').css('left','0px');},50);
+	});
+	
+	size = [$(window).width(), $(window).height()];
+	$('.saved').css('max-height',size[1]);
+});
+
+function update(){
+	
+	$('.red').html(parseInt(red));
+	$('.green').html(parseInt(green));
+	$('.blue').html(blue);
+	$('body').css('background','rgba('+parseInt(red)+','+parseInt(green)+','+blue+',1)');
+	
+}
+</script>
+</body>
+</html>

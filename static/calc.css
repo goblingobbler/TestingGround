@@ -1,0 +1,178 @@
+* {
+	margin: 0px;
+	padding: 0px;
+	font-family: 'myriad pro', verdana, sans-serif;
+}
+
+html {}
+
+body {
+	color: #005580;
+	font-size: 1em;
+}
+
+img {border:none;}
+
+.container {
+	width:1000px;
+	margin:0px auto;
+	background: white;
+	position: relative;
+	padding-bottom: 100px;
+}
+
+.transitions {
+	transition: all .4s;
+	-moz-transition: all .4s; 
+	-webkit-transition: all .4s;
+	-o-transition: all .4s;
+}
+
+.mainHeader {
+	position: fixed;
+	top: 0px;
+	background: white;
+	width:1000px;
+	z-index: 100;
+	overflow: hidden;
+}
+
+
+.contentPage {
+	padding-top: 105px;
+	margin-top: 150px;
+}
+
+.contentPage.home{
+	margin-top: 0px;
+}
+
+.slideContainer {
+	margin:0px auto;
+	padding: 1% .5%;
+	width:100%;
+	border-radius:5px;
+	min-height: 500px;
+	position: relative;
+}
+
+.green {border:1px solid rgba(118,201,51,0.5);}
+.blue  {border:1px solid rgba(0,85,126,0.5);}
+
+.titleGreen {
+	display: inline-block;
+	font-weight: 500;
+	font-size: 2.8em;
+	color: #76c933;
+	padding-left: 17px;
+}
+
+.titleBlue {
+	display: inline-block;
+	font-size: 1.2em;
+	color: #005580;
+	position: relative;
+	top: 10px;
+	font-weight:lighter;
+}
+
+.title {
+	padding: 50px;
+}
+
+.slide {
+	padding: 10px;
+	text-align: center;
+	display: none;
+	opacity: 0;
+	position: absolute;
+	width: 100%;
+}
+.subslide {
+	display: none;
+	opacity: 0;
+}
+
+.slide .title, .slide .btn, .dropdown, .inputCont {
+	font-size: 1.6em;
+}
+.slide .btn { 
+	padding: 10px 20px;
+	margin: 30px;
+}
+
+.btn.backbtn {
+	transform:rotate(180deg);
+	-ms-transform:rotate(180deg); /* IE 9 */
+	-webkit-transform:rotate(180deg); /* Opera, Chrome, and Safari */
+	padding: 13px 12px 17px 15px;
+	border-radius: 30px;
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	font-size: 1.6em;
+	opacity: 0;
+	z-index: 10;
+	display: none;
+}
+
+.horiz div {
+	display: inline-block;
+}
+
+.dropdown, .inputCont {
+	margin: 30px;
+}
+
+.childDisplay {
+	font-size: 1.6em;
+	position: relative;
+	top: 5px;
+}
+
+.inputCont input {
+	font-size: 1em;
+	position: relative;
+	top: 5px;
+}
+
+.dropdown .dk_container {
+	font-size: .8em;
+}
+.dk_label {
+	width: 140px;
+}
+
+.personCont {
+	text-align: left;
+	width: 50%;
+	margin: 0px auto;
+}
+
+.personTitle {
+	padding-bottom: 5px;
+	border-bottom: thin solid #005580;
+}
+
+.personTitle  div{
+	display: inline-block;
+	font-size: 1.2em;
+}
+.personTitle .right {
+	float: right;
+}
+.personCont .itemCont .btn {
+	font-size: 1.2em;
+	padding: 4px 12px;
+	margin: 10px;
+}
+
+.planTable {
+	width: 75%;
+	margin: 0px auto;
+}
+table, td{
+	border: 1px solid #005580;
+}
+
+

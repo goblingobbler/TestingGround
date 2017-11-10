@@ -1,0 +1,137 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<style>
+.ring {
+	border-radius: 1000px;
+	border: 1px solid #ddd;
+	position: absolute;
+	
+	transition: all .3s linear;
+	-moz-transition: all .3s linear; 
+	-webkit-transition: all .3s linear;
+	-o-transition: all .3s linear;
+	
+	transform: rotate(0deg);
+}
+
+.outer-bound {
+	position: relative;
+	width: 0px;
+    top: 50%;
+    left: 50%;
+	border:thin solid black;
+}
+
+.ring .ring {
+	opacity: .4;
+}
+
+.player {
+	width: 15px;
+	height: 0px;
+	background: red;
+	border-top: 10px solid;
+	border-top-left-radius: 100px;
+	border-top-right-radius: 100px;
+	transform: rotate(180deg);
+	position: fixed;
+	top: 0px;
+	
+	transition: all .1s linear;
+	-moz-transition: all .1s linear; 
+	-webkit-transition: all .1s linear;
+	-o-transition: all .1s linear;
+	
+}
+
+.player.out {
+	transform: rotate(0deg);
+	top: -10px;
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class='outer-bound'>
+	
+</div>
+
+<script>
+
+var rings = [10,22,15,20]
+var scale = 10;
+var interval = 300;
+var rpm = 5;
+var space = false;
+
+$(document).ready(function(){
+	for (var i = 0; i < rings.length; i++){
+		$('.outer-bound').append("<div class='ring' num='"+i+"' style='height:"+rings[i]*scale+"px;width:"+rings[i]*scale+"px;'></div>");
+	}
+	
+	setTimeout(function(){
+		drawLevel();
+	},10);
+	
+	center = [$(window).width()/2, $(window).height()/2]
+	if ($(window).width()>$(window).height()){
+		scale = $(window).height()/scale;}
+	else { scale = $(window).width()/scale;}
+	
+	var left = ($(window).width() - $(this).width()) / 2;
+	var top = ($(window).height() - $(this).height()) / 2;
+	
+	updateTime();
+	setInterval(function(){updateTime();},interval);
+	
+	$(document).keyup(function(evt){ 
+		if (evt.keyCode == 32) { 
+			if ($('.out').length == 0){
+				$('.player').addClass('out');
+			} else {
+				$('.player').removeClass('out');
+			}
+		}
+	});
+	
+});
+
+function 
+
+function drawLevel(){
+	$('.ring').each(function(){
+		var i = $(this).attr('num')
+		
+		if (i == 0){
+			var left = -$(this).width()/2;
+			var top = -$(this).height()/2;
+		} else {
+			var left = parseInt($('.ring[num='+(i-1)+']').css('left'));
+			var top = -$(this).height()/2;
+			left += $('.ring[num='+(i-1)+']').width();
+		}
+		$(this).css('left',left);
+		$(this).css('top',top);
+	});
+	
+	$('.ring[num=0]').append('<div class="player" style="left:'+($('.ring[num=0]').width()/2-7.5)+'px;"></div>');
+	
+}
+
+var seconds = 0;
+function updateTime(){
+	var angle = (rpm/60) * (seconds/1000) * 360;
+	$('.player').parent().css('transform','rotate('+(-1*angle*2)+'deg)');
+	
+	seconds += interval;
+}
+
+</script>
+</body>
+</html>
+

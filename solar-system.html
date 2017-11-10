@@ -1,0 +1,180 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<style>
+.ring {
+	border-radius: 1000px;
+	border: 1px solid #ddd;
+	position: absolute;
+	
+	transition: all 1s linear;
+	-moz-transition: all 1s linear; 
+	-webkit-transition: all 1s linear;
+	-o-transition: all 1s linear;
+	
+	transform: rotate(90deg);
+}
+
+.outer-bound {
+	position: relative;
+}
+
+.planet {
+	position: absolute;
+	top:0px;
+	left: 50%;
+	background: red;
+	border-radius: 1000px;
+}
+
+.saturn-rings {
+	position: absolute;
+	border: 6px solid rgb(190, 111, 40);
+	width: 45px;
+	height: 45px;
+	border-radius: 1000px;
+}
+.jupiter-hole {
+	position:absolute;
+	top:20%;
+	left:20%;
+	background: rgb(182, 12, 12);
+	border-radius: 1000px;
+}
+
+.ring .ring {
+	opacity: .4;
+}
+</style>
+</head>
+
+
+<body>
+
+
+<div class='outer-bound'>
+</div>
+
+<script>
+var center = [0,0];
+var count = 29;
+var scale = 26000;
+var planets = ['sun','mercury','venus','earth','mars','jupiter','saturn','uranus','neptune'];
+var distances = {'sun':{'radius':24,'dist':0,'time':0, 'color': 'rgb(246, 81, 28)',
+		'moons':{}},
+	'mercury':{'radius':1.5,'dist':4000,'time':3/12, 'color': '#be7938',
+		'moons':{}},
+	'venus':{'radius':3,'dist':5000,'time':7/12, 'color': '#f2ca96',
+		'moons':{}},
+	'earth':{'radius':3,'dist':7000,'time':1, 'color': '#0bbee9',
+		'moons':{'moon':{'radius':1.5,'dist':800,'time':.1, 'color': 'grey'}}},
+	'mars':{'radius':1.75,'dist':9000,'time':23/12, 'color': '#d43b1c',
+		'moons':{}},
+	'jupiter':{'radius':10,'dist':14000,'time':142/12, 'color': '#e48720',
+		'moons':{'ganymede':{'radius':3,'dist':2200,'time':.4, 'color': 'grey'},
+				'callisto':{'radius':2.8,'dist':1400,'time':.15, 'color': 'grey'},
+				'io':{'radius':1.8,'dist':3000,'time':.25, 'color': 'grey'},
+				'europa':{'radius':1.4,'dist':3500,'time':.18, 'color': 'grey'},
+			},
+		},
+	'saturn':{'radius':8,'dist':23000,'time':354/12, 'color': '#ef9443',
+		'moons':{'titan':{'radius':2.8,'dist':2200,'time':.5, 'color': 'grey'},
+				'rhea':{'radius':.75,'dist':2600,'time':.25, 'color': 'grey'},
+			},
+		},
+	'uranus':{'radius':4,'dist':29000,'time':1000/12, 'color': '#99d5bc',
+		'moons':{'titania':{'radius':.75,'dist':1400,'time':.15, 'color': 'grey'},},},
+	'neptune':{'radius':3,'dist':32000,'time':1979/12, 'color': '#0083bd',
+		'moons':{'triton':{'radius':.75,'dist':1000,'time':.35, 'color': 'grey'},},},
+}
+
+
+$(document).ready(function(){
+	for (var i = 0; i < planets.length; i++){
+		$('.outer-bound').append("<div class='ring'><div class='planet' id='"+planets[i]+"' ></div></div>");
+	}
+	
+	center = [$(window).width()/2, $(window).height()/2]
+	if ($(window).width()>$(window).height()){ 
+		scale = $(window).height()/scale;}
+	else { scale = $(window).width()/scale;}
+	
+	$('.ring').not('.moon').each(function(){
+		var id = $(this).find('.planet').attr('id');
+		setupPlanet(this, distances[id]);
+		for (key in distances[id]['moons']){
+			$(this).find('.planet').not('.moon').append("<div class='ring'><div class='planet moon' id='"+key+"' ></div></div>");
+		}
+	});
+	
+	$('.moon').each(function(){
+		var mkey = $(this).attr('id');
+		var ring = $(this).parent();
+		var id = $(this).parent().parent().attr('id');
+		setupPlanet(ring, distances[id]['moons'][mkey], true);
+	});
+	
+	var left = ($(window).width() - $(this).width()) / 2;
+	var top = ($(window).height() - $(this).height()) / 2;
+	$('#sun').css('top','-'+$('#sun').height()/2 + 'px');
+	$('#sun').css('left','-'+$('#sun').width()/2 + 'px');
+	$('#sun').closest('.ring').css('border','none');
+	
+	var size = $('#jupiter').width()/5;
+	$('#jupiter').append('<div class="jupiter-hole" style="width:'+size+'px;height:'+size+'px;"></div>');
+	
+	var size = $('#saturn').width()/2 - 56/2;
+	$('#saturn').append('<div class="saturn-rings" style="top:'+size+'px;left:'+size+'px;"></div>');
+	
+	updateTime();
+	setInterval(function(){
+		updateTime();},1000);
+	
+});
+
+function setupPlanet(thisObj, obj, local){
+	var id = $(thisObj).find('.planet').attr('id');
+		
+	var size = obj['dist']*scale;
+	$(thisObj).width(size + 'px');
+	$(thisObj).height(size + 'px');
+	
+	if (local != undefined){
+		$(thisObj).css('top','-'+(size-$(thisObj).parent().width())/2);
+		$(thisObj).css('left','-'+(size-$(thisObj).parent().width())/2);
+	}
+	else {
+		var left = ($(window).width() - size) / 2;
+		var top = ($(window).height() - size) / 2;
+		$(thisObj).css('top',top);
+		$(thisObj).css('left',left);
+	}
+	
+	
+	$(thisObj).find('.planet').width(obj['radius']*100*scale + 'px');
+	$(thisObj).find('.planet').height($(thisObj).find('.planet').width());
+	$(thisObj).find('.planet').css('top','-'+$(thisObj).find('.planet').height()/2 + 'px');
+	
+	$(thisObj).find('.planet').css('background',obj['color']);
+}
+
+var seconds = 0;
+function updateTime(){
+	$('.planet').each(function(){
+		if ($(this).parent().closest('.planet').not('#sun').length > 0){
+			var ida = $(this).attr('id');
+			var test = $(this).parent().closest('.planet').attr('id');
+			var id = distances[test]['moons'][$(this).attr('id')];
+		}
+		else {var id = distances[$(this).attr('id')];}
+		if (id['time'] > 0){
+			var angle = seconds/id['time'];
+			$(this).closest('.ring').css('transform','rotate('+((-1*angle*2)+90)+'deg)');
+		}
+		seconds += 1;
+	});
+}
+
+</script>
+</body>
+</html>

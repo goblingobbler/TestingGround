@@ -1,0 +1,207 @@
+* {padding: 0px;margin: 0px;font-family:'Lato',sans-serif;}
+
+a, a:hover  {color:inherit;text-decoration:underline;}
+
+.transitions {
+	transition: all .5s ease-in-out;
+	-moz-transition: all .5s ease-in-out; 
+	-webkit-transition: all .5s ease-in-out;
+	-o-transition: all .5s ease-in-out;
+}
+
+.transitionsFast {
+	transition: all .25s ease-in-out;
+	-moz-transition: all .25s ease-in-out; 
+	-webkit-transition: all .25s ease-in-out;
+	-o-transition: all .25s ease-in-out;
+}
+
+.header, .slide, .slideContainer{
+	width: 100%;
+}
+.header {
+	position: fixed;
+	height: 40px;
+	border-bottom: thin solid rgba(0,0,0,.2);
+	box-shadow: 1px 0px 3px rgba(0,0,0,.2);
+	background: white;
+	z-index: 100;
+	overflow:hidden;
+}
+
+.inner, .headerInner {
+	width:1000px;
+	margin: 0px auto;
+}
+.slide {
+	position: relative;
+	top:25px;
+	opacity: 0;
+}
+.slide.shown {
+	top:0px;
+	opacity: 1;
+}
+
+.logo {
+	font-size: 2.5em;
+	font-weight: bold;
+	display: inline-block;
+}
+.header .links {
+	float:right;
+}
+.header .links .link {
+	display: inline-block;
+	font-size: 1.2em;
+	padding:10px;
+	border-right: thin solid rgba(0,0,0,.4);
+}
+
+.link:hover {
+	cursor: pointer;
+	opacity: .7;
+}
+
+.slideContainer {
+	padding-top: 40px;
+	text-align: center;
+}
+
+.inner {
+	padding: 20px;
+}
+
+
+/* ##########  WELCOME SLIDE ########## */
+
+.welcome, .welcome .title {
+	background: #34495e;
+	color: white;
+}
+.welcome.slide {
+	top: 0px;
+	opacity: 1;
+}
+.welcome .titleContainer {
+	margin: 50px;
+}
+.welcome .title, .welcome .titleUnderscore {
+	font-size: 3em;
+}
+.welcome .title {
+	position: relative;
+	z-index: 2;
+}
+.welcome .titleUnderline {
+	width:0px;
+	border-bottom: 3px solid white;
+	margin: 0px auto;
+}
+.welcome .titleUnderscore {
+	position: relative;
+	top: -54px;
+}
+.welcome .titlePitch {
+	font-size: 1.8em;
+	margin: 50px 100px;
+}
+
+/* ##########  CONTACT SLIDE ########## */
+
+.contacts {
+	border-bottom: thin solid rgba(0,0,0,.4);
+}
+.contacts .inner {
+	padding:0px;
+}
+
+.contact {
+	display: inline-block;
+	margin: 10px 20px;
+}
+.contact img {
+	vertical-align: top;
+	width: 17px;
+	opacity: .5;
+	padding: 0px 10px;
+}
+
+/* ##########  SKILL SLIDE ########## */
+
+.skill {
+	display: inline-block;
+	width:29%;
+	vertical-align:top;
+	margin:2%;
+}
+.skillTitle {
+	font-size: 1.6em;
+	padding: 20px;
+	background: #34495e;
+	color: white;
+	border-radius: 5px 5px 0px 0px;
+}
+
+.skillItems {
+	padding-top: 20px;
+}
+.skill img {
+	width: 120px;
+}
+
+/* ##########  SNIPPET SLIDE ########## */
+
+.snippets {
+	background: #34495e;
+	color: white;
+	padding-bottom: 50px;
+}
+
+.snippetsTitle {
+	font-size: 2em;
+	border-bottom: thin solid rgba(255,255,255,.2);
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}
+.snip {
+	display: inline-block;
+	width: 18%;
+	margin: 1%;
+	background: rgba(255,255,255,.2);
+	padding: 10px;
+	border-radius: 5px;
+	vertical-align:top;
+}
+.snipTitle {
+	font-size: 1.2em;
+	display: block;
+	padding-bottom:10px;
+	border-bottom: thin solid rgba(255,255,255,.2);
+}
+.snipDesc {
+	padding: 10px;
+}
+
+
+/* ##########  PROJECT SLIDE ########## */
+
+
+.projectsTitle {
+	font-size: 2em;
+	border-bottom: thin solid rgba(0,0,0,.2);
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}
+
+.project {
+	display: inline-block;
+	width: 43%;
+	margin: 3%;
+	vertical-align:top;
+}
+.projectTitle {
+	font-size: 1.8em;
+	display: block;
+	padding-bottom:10px;
+}
