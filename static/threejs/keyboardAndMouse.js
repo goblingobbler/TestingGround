@@ -46,7 +46,7 @@ function initKeyboard(){
                 break;
 
             case 32: // space
-                if ( canJump === true ) //velocity.y += 100;
+                if ( canJump === true ) velocity.y += 30;
                 canJump = false;
                 break;
 
