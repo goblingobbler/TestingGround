@@ -4,14 +4,14 @@ a, a:hover  {color:inherit;text-decoration:underline;}
 
 .transitions {
 	transition: all .5s ease-in-out;
-	-moz-transition: all .5s ease-in-out; 
+	-moz-transition: all .5s ease-in-out;
 	-webkit-transition: all .5s ease-in-out;
 	-o-transition: all .5s ease-in-out;
 }
 
 .transitionsFast {
 	transition: all .25s ease-in-out;
-	-moz-transition: all .25s ease-in-out; 
+	-moz-transition: all .25s ease-in-out;
 	-webkit-transition: all .25s ease-in-out;
 	-o-transition: all .25s ease-in-out;
 }
@@ -129,6 +129,10 @@ a, a:hover  {color:inherit;text-decoration:underline;}
 
 /* ##########  SKILL SLIDE ########## */
 
+.skills {
+	padding-bottom: 50px;
+}
+
 .skill {
 	display: inline-block;
 	width:29%;
@@ -148,6 +152,7 @@ a, a:hover  {color:inherit;text-decoration:underline;}
 }
 .skill img {
 	width: 120px;
+	padding: 15px 5px;
 }
 
 /* ##########  SNIPPET SLIDE ########## */
@@ -186,12 +191,15 @@ a, a:hover  {color:inherit;text-decoration:underline;}
 
 /* ##########  PROJECT SLIDE ########## */
 
+.projectsHeader {
+	background: #34495e;
+	color: white;
+}
 
 .projectsTitle {
 	font-size: 2em;
-	border-bottom: thin solid rgba(0,0,0,.2);
-	margin-bottom: 10px;
-	padding-bottom: 10px;
+	margin: 10px;
+	padding: 10px;
 }
 
 .project {
@@ -204,4 +212,9 @@ a, a:hover  {color:inherit;text-decoration:underline;}
 	font-size: 1.8em;
 	display: block;
 	padding-bottom:10px;
+}
+
+
+.projectImage {
+	box-shadow: 2px 2px 10px rgba(0,0,0,.2);
 }
