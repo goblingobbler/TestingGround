@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 import random
 
-from crystal import Crystal
+from objects.crystal import Crystal
 
 
 class PetriDish():

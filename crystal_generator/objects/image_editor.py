@@ -3,7 +3,10 @@ from PIL import Image, ImageDraw
 from ast import literal_eval
 from copy import deepcopy
 
-from helpers import calc_color_diff, get_directions, get_direction_opposites, get_angles, get_directions_for_distance
+from objects.line import Line
+from helpers.helpers import calc_color_diff
+from helpers.directions import get_directions, get_direction_opposites, get_angles, get_directions_for_distance
+from helpers.colors import RGB_COLORS
 
 import pprint
 
@@ -24,6 +27,9 @@ class ImageEditor():
         self.draw = ImageDraw.Draw(self.image)
 
         self.direction_opposites = get_direction_opposites()
+
+        self.lines = []
+        self.last_starting_point = [0,0]
 
 
     def refresh_pixels(self, image):
@@ -103,7 +109,7 @@ class ImageEditor():
                     if same_color != max and float(max) / float(all_colors) > .5:
                         self.pixels[i][j] = literal_eval(max_color)
 
-    def calculate_tension(self, filename='tension.jpg'):
+    def calculate_tension(self, filename='tension.png'):
         tension_pixels = []
         for i in range(self.height):
             tension_pixels.append([])
@@ -140,10 +146,10 @@ class ImageEditor():
 
         self.print_new_image(filename, tension_pixels, max_tension)
 
-
-    def find_lines(self, threshold=100):
-        #starting_point = None
-        line_points = []
+    
+    def apply_threshold(self, threshold=100):
+        line_color = RGB_COLORS['white']
+        line = Line(color=line_color)
         for i in range(self.height):
             for j in range(self.width):
                 point = [j,i]
@@ -152,71 +158,97 @@ class ImageEditor():
 
                 if new_color_total / 9 > threshold:
                     #starting_point = point
-                    line_points.append(point)
+                    line.add_pixel(point)
                     #break
             #if starting_point:
             #    break
 
         print('line points found')
 
-        line_image = Image.new("RGB", self.image.size, (255, 255, 255, 0))
+        line_image = Image.new("RGB", self.image.size, (0, 0, 0))
         line_pixels = self.refresh_pixels(line_image)
-        for i in range(self.height):
-            for j in range(self.width):
-                point = [j,i]
-                line_pixels[i][j] = 0
-            
-        for point in line_points:
-            line_pixels[point[1]][point[0]] = 255
         
-        print_lines = deepcopy(line_pixels)
-        self.print_new_image('lines.jpg', print_lines)
+        for point in line.pixels:
+            line_pixels[point[1]][point[0]] = (255,255,255)
+        
+        self.print_new_image('lines.png', line_pixels)
         print('Lines Complete')
+
+        return line_pixels
+
+    def find_lines(self, threshold=100):
+
+        line_pixels = self.apply_threshold(threshold)
         
         thin_pixels = self.thin_lines(line_pixels)
 
-        print_lines = deepcopy(thin_pixels)
-        self.print_new_image('thin_lines.png', print_lines)
+        self.print_new_image('thin_lines.png', thin_pixels)
 
+        line_image = Image.new("RGB", self.image.size, (0, 0, 0))
+        
+
+        starting_point = self.find_starting_point(thin_pixels)
+
+        rgb_color_list = [RGB_COLORS[key] for key in RGB_COLORS]
+        print('Starting Point', starting_point)
+        count = 0
+        while starting_point:# and count < 10:
+            line_color = rgb_color_list[count % len(rgb_color_list) - 1]
+            line = Line(color=line_color)
+            line.add_pixel(starting_point)
+
+            next_point = self.search_for_next_line_point(thin_pixels, starting_point, line, threshold=threshold)
+
+            while next_point:
+                next_point = self.search_for_next_line_point(thin_pixels, next_point, line, threshold=threshold)
+
+            print('Completing Line: ', line.pixels[0], len(line.pixels))
+            self.lines.append(line)
+
+            starting_point = self.find_starting_point(thin_pixels)
+            count += 1
+        
+        print_pixels = self.refresh_pixels(line_image)
+        for line in self.lines:
+            line.draw_line(print_pixels)
+
+        self.print_new_image('found_lines.png', print_pixels)
+        
+        print_pixels = self.refresh_pixels(line_image)
+        for line in self.lines:
+            line.reduce()
+            line.draw_line(print_pixels)
+
+        self.print_new_image('found_lines_reduced.png', print_pixels)
+
+    def find_starting_point(self, pixels):
         starting_point = None
-        for i in range(self.height):
+
+        for i in range(self.last_starting_point[1], self.height):
             for j in range(self.width):
                 point = [j,i]
 
-                if thin_pixels[i][j] != 255:
+                found = False
+                for line in self.lines:
+                    if line.contains(point):
+                        found = True
+                        break
+                if found: 
                     continue
-            
+                
+                color = self.get_point_value(point, pixels)
+                if color != 255:
+                    continue
+                
                 starting_point = point
                 break
 
             if starting_point:
                 break
-
-        print('Starting Point', starting_point)
-        if starting_point:
-            line_points = []
-            all_points = []
-            next_point = self.search_for_next_line_point(thin_pixels, starting_point, all_points, threshold=threshold)
-
-            while next_point:
-                line_points.append(next_point)
-                all_points.append(next_point)
-                next_point = self.search_for_next_line_point(thin_pixels, next_point, all_points, threshold=threshold)
-
-            pprint.pprint(line_points)
         
-        line_image = Image.new("RGB", self.image.size, (255, 255, 255, 0))
-        line_pixels = self.refresh_pixels(line_image)
-        for i in range(self.height):
-            for j in range(self.width):
-                point = [j,i]
-                line_pixels[i][j] = 0
-            
-        for point in line_points:
-            line_pixels[point[1]][point[0]] = 255
-
-        self.print_new_image('found_lines.png', line_pixels)
-
+        print(starting_point)
+        self.last_starting_point = starting_point
+        return starting_point
 
     def thin_lines(self, pixels):
         last_changed = None
@@ -231,7 +263,7 @@ class ImageEditor():
                 for j in angle[1]:
                     point = [j,i]
 
-                    color = pixels[i][j]
+                    color = self.get_point_value(point, pixels)
                     if color != 255:
                         continue
                     
@@ -251,7 +283,7 @@ class ImageEditor():
                 for i in angle[0]:
                     point = [j,i]
                     
-                    color = pixels[i][j]
+                    color = self.get_point_value(point, pixels)
                     if color != 255:
                         continue
                     
@@ -265,8 +297,11 @@ class ImageEditor():
 
                     self.check_next_point_for_thickness(point, pixels, direction, double_direction)
 
-        
         return pixels
+
+    def get_point_value(self, point, pixels):
+        return int(sum(pixels[point[1]][point[0]]) / 3)
+    
 
     def check_next_point_for_thickness(self,point, pixels, direction, double_direction):
         new_point = [
@@ -284,33 +319,40 @@ class ImageEditor():
         if not self.check_point_inside(double_point):
             return False
 
-        if pixels[new_point[1]][new_point[0]] == 255 and pixels[double_point[1]][double_point[0]] != 255:
-            pixels[new_point[1]][new_point[0]] = 0
+        first_color = self.get_point_value(new_point, pixels)
+        second_color = self.get_point_value(double_point, pixels)
+        if first_color == 255 and second_color != 255:
+            pixels[new_point[1]][new_point[0]] = (0,0,0)
 
         return True
 
-    def search_for_next_line_point(self, pixels, point, last_points, threshold=100):
-        
-
+    def search_for_next_line_point(self, pixels, point, line, threshold=100):
         next_point = None
-        for distance in range(1,5):
+
+        for distance in range(1,6):
             directions = get_directions_for_distance(distance)
+
+            new_points = []
             for direction in directions:
                 new_point = [
                     point[0] + direction[0],
                     point[1] + direction[1],
                 ]
-                if new_point in last_points:
+                if line.contains(new_point):
                     continue
 
                 if not self.check_point_inside(new_point):
                     continue
                 
-                if pixels[new_point[1]][new_point[0]] == 255:
-                    next_point = new_point
-                    break
+                if self.get_point_value(new_point, pixels) == 255:
+                    new_points.append(new_point)
             
-            print('Next Point', next_point)
+            if len(new_points) > 0:
+                next_point = new_points[-1]
+                for new_point in new_points:
+                    line.add_pixel(new_point)
+
+            #print('Next Point', next_point)
             if next_point:
                 '''
                 for opposite in self.direction_opposites[next_point_key]:
@@ -368,11 +410,13 @@ class ImageEditor():
 
         for i in range(self.height):
             for j in range(self.width):
-                color_value = int((pixels[i][j] / scale) * 255)
-                pixels[i][j] = (color_value, color_value, color_value)
+                if scale != 255:
+                    color_value = int((pixels[i][j] / scale) * 255)
+                    pixels[i][j] = (color_value, color_value, color_value)
         
                 new_image.putpixel((j,i), pixels[i][j])
-    
+
+        print('## Creating Image', filename)
         new_image.save('output_images\\%s' % (filename))
 
 
@@ -382,5 +426,5 @@ class ImageEditor():
                 self.image.putpixel((j,i), self.pixels[i][j])
 
 
-    def snapshot(self, filename='output.jpg'):
+    def snapshot(self, filename='output.png'):
         self.image.save('output_images\\%s' % (filename))

@@ -1,6 +1,6 @@
 import random
 
-from helpers import area, is_on_edge, calc_color_diff
+from helpers.helpers import area, is_on_edge, calc_color_diff
 
 
 class Crystal():

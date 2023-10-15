@@ -1,37 +1,45 @@
-from petri_dish import PetriDish
-from image_editor import ImageEditor
+from objects.petri_dish import PetriDish
+from objects.image_editor import ImageEditor
+from objects.stl_editor import STLEditor
 
 def main():
 
-    #experiment = ImageEditor('input_images\\numbers.jpg')
-    #simplify(experiment)
+    experiment = ImageEditor('input_images\\card_bold.png')
+    simplify(experiment)
 
-    experiment = ImageEditor('output_images\\tension3.jpg')
-    experiment.find_lines(threshold=80)
+    experiment = ImageEditor('output_images\\tension3.png')
+    experiment.find_lines(threshold=70)
+
+    #experiment = ImageEditor('input_images\\symbols_tension.png')
+    #experiment.find_lines(threshold=80)
+
+    editor = STLEditor(point_lists=experiment.lines)
+    editor.output_file()
+
 
 
 
 
 def simplify(experiment):
     
-    experiment.calculate_tension(filename='tension.jpg')
+    experiment.calculate_tension(filename='tension.png')
     print('First Tension')
 
     experiment.simplify_colors(depth=4)
     experiment.print_pixel_list()
-    experiment.snapshot(filename='output.jpg')
+    experiment.snapshot(filename='output.png')
     print('Simplified')
 
-    experiment.calculate_tension(filename='tension2.jpg')
+    experiment.calculate_tension(filename='tension2.png')
     print('Second Tension')
 
     for i in range(1):
         experiment.reduce_noise()
     experiment.print_pixel_list()
-    experiment.snapshot(filename='output3.jpg')
+    experiment.snapshot(filename='output3.png')
     print('Noise Reduced')
     
-    experiment.calculate_tension(filename='tension3.jpg')
+    experiment.calculate_tension(filename='tension3.png')
     print('Third Tension')
     
     
