@@ -104,3 +104,5 @@ ENV/
 pythonEnv/
 
 crystal_generator/output_images/
+
+factorio_clone/player/package-lock.json
