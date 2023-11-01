@@ -2,9 +2,10 @@ import React, { Component } from "react";
 
 import CanvasMap from "../components/canvas_map";
 import GroundLayer from "../layers/ground_layer";
+import OreLayer from "../layers/ore_layer";
 import PlayerLayer from "../layers/player_layer";
 
-const PLAYER_SPEED = 4;
+const PLAYER_SPEED = 8;
 const SIXTY_FPS = parseInt(1000 / 60);
 
 export default class Map extends Component {
@@ -31,16 +32,20 @@ export default class Map extends Component {
 
         let moving_direction = null;
         if (event.key == "w") {
-            moving_direction = [0, -PLAYER_SPEED];
+            moving_direction = [this.state.moving_direction[0], -PLAYER_SPEED];
         } else if (event.key == "a") {
-            moving_direction = [-PLAYER_SPEED, 0];
+            moving_direction = [-PLAYER_SPEED, this.state.moving_direction[1]];
         } else if (event.key == "s") {
-            moving_direction = [0, PLAYER_SPEED];
+            moving_direction = [this.state.moving_direction[0], PLAYER_SPEED];
         } else if (event.key == "d") {
-            moving_direction = [PLAYER_SPEED, 0];
+            moving_direction = [PLAYER_SPEED, this.state.moving_direction[1]];
         }
 
-        if (moving_direction && !this.state.moving) {
+        if (
+            moving_direction &&
+            (moving_direction[0] != this.state.moving_direction[0] ||
+                moving_direction[1] != this.state.moving_direction[1])
+        ) {
             this.setState(
                 {
                     moving_direction,
@@ -71,15 +76,29 @@ export default class Map extends Component {
 
     stop_moving(event) {
         console.log(event.key);
-        this.setState({ moving_direction: [0, 0], moving: false });
+
+        let moving_direction = null;
+        if (event.key == "w") {
+            moving_direction = [this.state.moving_direction[0], 0];
+        } else if (event.key == "a") {
+            moving_direction = [0, this.state.moving_direction[1]];
+        } else if (event.key == "s") {
+            moving_direction = [this.state.moving_direction[0], 0];
+        } else if (event.key == "d") {
+            moving_direction = [0, this.state.moving_direction[1]];
+        }
+
+        if (moving_direction) {
+            this.setState({ moving_direction: moving_direction });
+        }
     }
 
     render() {
         return (
             <div onKeyDown={this.start_moving} onKeyUp={this.stop_moving}>
-                <CanvasMap is_map_draggable={true}>
+                <CanvasMap is_map_draggable={true} player_position={this.state.player_position}>
                     <GroundLayer player_position={this.state.player_position} />
-
+                    <OreLayer player_position={this.state.player_position} />
                     <PlayerLayer />
                 </CanvasMap>
             </div>

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Layer, Group, Rect } from "react-konva";
+import { Layer, Group, Rect, Text } from "react-konva";
 
 import CanvasImage from "../components/canvas_image";
+import { get_quadrent_number } from "../helpers";
 
 function get_random_int(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -16,13 +17,10 @@ class GroundTile extends Component {
 
     render() {
         return (
-            <Rect
-                x={this.props.position[0]}
-                y={this.props.position[1]}
-                width={this.props.size}
-                height={this.props.size}
-                fill={this.props.color || "grey"}
-            />
+            <Group x={this.props.position[0]} y={this.props.position[1]}>
+                <Rect width={this.props.size} height={this.props.size} fill={this.props.color || "grey"} />
+                {/*<Text text={this.props.text} fontSize={12} />*/}
+            </Group>
         );
     }
 }
@@ -35,74 +33,36 @@ export default class GroundLayer extends Component {
         };
 
         this.get_quadrent = this.get_quadrent.bind(this);
+        this.update_ground_tiles = this.update_ground_tiles.bind(this);
     }
 
     componentDidMount() {
-        if (this.props.load_ground_layer) {
-            this.props.load_ground_layer(this.layer_node);
-        }
+        this.update_ground_tiles();
     }
 
-    get_quadrent(row, col) {
+    componentDidUpdate(old_props) {
         let tile_size = this.props.tile_size || 50;
 
-        let tiles = this.state.ground_tiles;
-        let offset = [0, 0];
-        let quadrent_number = 0;
-        if (row < 0) {
-            if (col < 0) {
-                quadrent_number = 2;
-                offset = [1, 1];
-            } else {
-                quadrent_number = 3;
-                offset = [1, 0];
-            }
-        } else {
-            if (col < 0) {
-                quadrent_number = 1;
-                offset = [0, 1];
-            } else {
-                quadrent_number = 0;
-            }
+        let starting_tile = [
+            parseInt(this.props.player_position[0] / tile_size),
+            parseInt(this.props.player_position[1] / tile_size),
+        ];
+        let old_starting_tile = [
+            parseInt(old_props.player_position[0] / tile_size),
+            parseInt(old_props.player_position[1] / tile_size),
+        ];
+
+        if (
+            this.props.width != old_props.width ||
+            this.props.height != old_props.height ||
+            starting_tile[0] != old_starting_tile[0] ||
+            starting_tile[1] != old_starting_tile[1]
+        ) {
+            this.update_ground_tiles();
         }
-
-        let quadrent = tiles[quadrent_number];
-
-        let tile_row = row;
-        let tile_col = col;
-        if (row < 0) {
-            tile_row = -1 * row - 1;
-        }
-        if (col < 0) {
-            tile_col = -1 * col - 1;
-        }
-
-        while (quadrent.length < tile_row + 1) {
-            quadrent.push([]);
-        }
-
-        while (quadrent[tile_row].length < tile_col + 1) {
-            let current_col = quadrent[tile_row].length;
-            if (col < 0) {
-                current_col = (current_col + 1) * -1;
-            }
-
-            let position = [row * tile_size, current_col * tile_size];
-
-            let r = get_random_int(100, 200);
-            let g = get_random_int(100, 200);
-            let b = get_random_int(100, 200);
-            let color = `rgb(${r}, ${g}, ${b})`;
-
-            quadrent[tile_row].push(
-                <GroundTile color={color} key={`${row}_${current_col}`} position={position} size={tile_size} />
-            );
-        }
-
-        return quadrent[tile_row][tile_col];
     }
 
-    render() {
+    update_ground_tiles() {
         let tile_size = this.props.tile_size || 50;
         let rows = parseInt(this.props.width / tile_size);
         let cols = parseInt(this.props.height / tile_size);
@@ -128,20 +88,76 @@ export default class GroundLayer extends Component {
 
                 let tile = this.get_quadrent(tile_row, tile_col);
 
-                display_tiles.push(tile);
+                let display_tile = (
+                    <GroundTile
+                        color={tile["color"]}
+                        key={tile["key"]}
+                        text={tile["key"]}
+                        position={tile["position"]}
+                        size={tile_size}
+                    />
+                );
+                display_tiles.push(display_tile);
 
                 col += 1;
             }
             row += 1;
         }
 
+        this.setState({
+            display_tiles: display_tiles,
+        });
+    }
+
+    get_quadrent(row, col) {
+        let tile_size = this.props.tile_size || 50;
+
+        let tiles = this.state.ground_tiles;
+        let quadrent_number = get_quadrent_number(row, col);
+
+        let quadrent = tiles[quadrent_number];
+
+        let tile_row = row;
+        let tile_col = col;
+        if (row < 0) {
+            tile_row = -1 * row - 1;
+        }
+        if (col < 0) {
+            tile_col = -1 * col - 1;
+        }
+
+        while (quadrent.length < tile_row + 1) {
+            quadrent.push([]);
+        }
+
+        while (quadrent[tile_row].length < tile_col + 1) {
+            let current_col = quadrent[tile_row].length;
+            if (col < 0) {
+                current_col = (current_col + 1) * -1;
+            }
+
+            let position = [row * tile_size, current_col * tile_size];
+
+            let r = get_random_int(100, 150);
+            let g = get_random_int(100, 150);
+            let b = get_random_int(100, 150);
+            let color = `rgb(${r}, ${g}, ${b})`;
+
+            quadrent[tile_row].push({
+                color: color,
+                key: `${row}_${current_col}`,
+                position: position,
+            });
+        }
+
+        return quadrent[tile_row][tile_col];
+    }
+
+    render() {
         return (
             <Layer
-                ref={(node) => {
-                    this.layer_node = node;
-                }}
-                x={-1 * this.props.player_position[0]}
-                y={-1 * this.props.player_position[1]}
+                x={-1 * this.props.player_position[0] * this.props.zoom}
+                y={-1 * this.props.player_position[1] * this.props.zoom}
             >
                 <Group
                     x={this.props.layer_position[0]}
@@ -149,21 +165,7 @@ export default class GroundLayer extends Component {
                     scaleX={this.props.zoom}
                     scaleY={this.props.zoom}
                 >
-                    {display_tiles}
-                    <CanvasImage
-                        src={"/static/images/test.png"}
-                        position={[400, 400]}
-                        size={[50, 50]}
-                        draggable={false}
-                        zoom={1}
-                    />
-                    <CanvasImage
-                        src={"/static/images/test.png"}
-                        position={[0, 0]}
-                        size={[50, 50]}
-                        draggable={false}
-                        zoom={1}
-                    />
+                    {this.state.display_tiles}
                 </Group>
             </Layer>
         );

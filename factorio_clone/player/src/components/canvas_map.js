@@ -29,8 +29,6 @@ export default class CanvasMap extends Component {
             end_draw_position: null,
         };
 
-        this.load_ground_layer = this.load_ground_layer.bind(this);
-
         this.handle_key_press = this.handle_key_press.bind(this);
         this.handle_scroll = this.handle_scroll.bind(this);
 
@@ -61,12 +59,6 @@ export default class CanvasMap extends Component {
                 map_center: map_center,
             });
         }
-    }
-
-    load_ground_layer(layer_node) {
-        this.setState({
-            layer_node: layer_node,
-        });
     }
 
     handle_key_press(event) {
@@ -118,28 +110,10 @@ export default class CanvasMap extends Component {
         position[0] = this.state.map_center[0] - new_center_position_on_map_x;
         position[1] = this.state.map_center[1] - new_center_position_on_map_y;
 
-        let top_layer_position = [
-            this.state.layer_node.attrs.x / this.state.zoom,
-            this.state.layer_node.attrs.y / this.state.zoom,
-        ];
-        let top_layer_distance_change_x = top_layer_position[0] * (end_zoom - start_zoom);
-        let top_layer_distance_change_y = top_layer_position[1] * (end_zoom - start_zoom);
-
-        this.setState(
-            {
-                zoom: end_zoom,
-                layer_position: position,
-                top_change: [top_layer_distance_change_x, top_layer_distance_change_y],
-            },
-            function () {
-                if (this.state.layer_node) {
-                    this.state.layer_node.move({
-                        x: this.state.top_change[0],
-                        y: this.state.top_change[1],
-                    });
-                }
-            }.bind(this)
-        );
+        this.setState({
+            zoom: end_zoom,
+            layer_position: position,
+        });
     }
 
     render() {
