@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Layer, Group, Rect, Text } from "react-konva";
 
 import CanvasImage from "../components/canvas_image";
-import { get_quadrent_number } from "../helpers";
+import { get_quadrent_number, get_tile } from "../helpers";
 
 function get_random_int(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -18,7 +18,7 @@ class GroundTile extends Component {
     render() {
         return (
             <Group x={this.props.position[0]} y={this.props.position[1]}>
-                <Rect width={this.props.size} height={this.props.size} fill={this.props.color || "grey"} />
+                <Rect width={this.props.size + 1} height={this.props.size + 1} fill={this.props.color || "grey"} />
                 {/*<Text text={this.props.text} fontSize={12} />*/}
             </Group>
         );
@@ -43,14 +43,8 @@ export default class GroundLayer extends Component {
     componentDidUpdate(old_props) {
         let tile_size = this.props.tile_size || 50;
 
-        let starting_tile = [
-            parseInt(this.props.player_position[0] / tile_size),
-            parseInt(this.props.player_position[1] / tile_size),
-        ];
-        let old_starting_tile = [
-            parseInt(old_props.player_position[0] / tile_size),
-            parseInt(old_props.player_position[1] / tile_size),
-        ];
+        let starting_tile = get_tile(this.props.top_position, tile_size);
+        let old_starting_tile = get_tile(old_props.top_position, tile_size);
 
         if (
             this.props.width != old_props.width ||
@@ -64,27 +58,19 @@ export default class GroundLayer extends Component {
 
     update_ground_tiles() {
         let tile_size = this.props.tile_size || 50;
-        let rows = parseInt(this.props.width / tile_size);
-        let cols = parseInt(this.props.height / tile_size);
 
-        let starting_tile = [
-            parseInt(this.props.player_position[0] / tile_size),
-            parseInt(this.props.player_position[1] / tile_size),
-        ];
+        let map_size = get_tile([this.props.width, this.props.height], tile_size, 2);
+        let starting_tile = get_tile(this.props.top_position, tile_size, -1);
 
         let row = 0;
         let display_tiles = [];
 
-        while (row < rows) {
+        while (row <= map_size[0]) {
             let tile_row = starting_tile[0] + row;
-            console.log(tile_row);
 
             let col = 0;
-            while (col < cols) {
+            while (col <= map_size[1]) {
                 let tile_col = starting_tile[1] + col;
-                if (tile_row == -1) {
-                    console.log("col", tile_col);
-                }
 
                 let tile = this.get_quadrent(tile_row, tile_col);
 
@@ -137,13 +123,16 @@ export default class GroundLayer extends Component {
             }
 
             let position = [row * tile_size, current_col * tile_size];
-
-            let r = get_random_int(100, 150);
-            let g = get_random_int(100, 150);
-            let b = get_random_int(100, 150);
-            let color = `rgb(${r}, ${g}, ${b})`;
+            let type = "grass";
+            if (quadrent_number == 3) {
+                type = "desert";
+            } else if (quadrent_number == 2) {
+                type = "rock";
+            }
+            let color = this.get_color(type);
 
             quadrent[tile_row].push({
+                type: type,
                 color: color,
                 key: `${row}_${current_col}`,
                 position: position,
@@ -153,11 +142,34 @@ export default class GroundLayer extends Component {
         return quadrent[tile_row][tile_col];
     }
 
+    get_color(type) {
+        let color = "grey";
+
+        if (type == "grass") {
+            let r = get_random_int(120, 130);
+            let g = get_random_int(140, 160);
+            let b = get_random_int(120, 130);
+            color = `rgb(${r}, ${g}, ${b})`;
+        } else if (type == "desert") {
+            let r = get_random_int(180, 200);
+            let g = get_random_int(180, 200);
+            let b = get_random_int(150, 160);
+            color = `rgb(${r}, ${g}, ${b})`;
+        } else if (type == "rock") {
+            let r = get_random_int(150, 160);
+            let g = get_random_int(150, 160);
+            let b = get_random_int(150, 160);
+            color = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        return color;
+    }
+
     render() {
         return (
             <Layer
-                x={-1 * this.props.player_position[0] * this.props.zoom}
-                y={-1 * this.props.player_position[1] * this.props.zoom}
+                x={-1 * this.props.top_position[0] * this.props.zoom}
+                y={-1 * this.props.top_position[1] * this.props.zoom}
             >
                 <Group
                     x={this.props.layer_position[0]}

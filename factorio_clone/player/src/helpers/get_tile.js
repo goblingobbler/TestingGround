@@ -1,3 +1,5 @@
-export default function get_tile(position, tile_size) {
-    return [parseInt(position[0] / tile_size), parseInt(position[1] / tile_size)];
+export default function get_tile(position, tile_size, adjust = 0) {
+    let tile = [parseInt(position[0] / tile_size) + adjust, parseInt(position[1] / tile_size) + adjust];
+
+    return tile;
 }

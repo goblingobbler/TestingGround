@@ -15,9 +15,7 @@ export default class CanvasMap extends Component {
             width: 0,
             height: 0,
             map_center: [0, 0],
-            top_layer_position: [0, 0],
             layer_position: [0, 0],
-            mouse_position: [0, 0],
 
             image_width: 0,
             image_height: 0,
@@ -31,6 +29,7 @@ export default class CanvasMap extends Component {
 
         this.handle_key_press = this.handle_key_press.bind(this);
         this.handle_scroll = this.handle_scroll.bind(this);
+        this.handle_click = this.handle_click.bind(this);
 
         this.zoom_in = this.zoom_in.bind(this);
         this.zoom_out = this.zoom_out.bind(this);
@@ -82,38 +81,55 @@ export default class CanvasMap extends Component {
         }
     }
 
+    handle_click(event) {
+        if (this.props.handle_click) {
+            this.props.handle_click(event);
+        }
+
+        return true;
+    }
+
     zoom_in() {
-        var zoom = this.state.zoom;
+        var zoom = this.props.zoom || this.state.zoom;
         var original_zoom = zoom;
         zoom *= zoom_multiplier;
-        //if (zoom > 2.5){zoom -= .05;}
 
-        this.keep_viewport_centered(original_zoom, zoom);
+        if (this.props.zoom_min && zoom > this.props.zoom_min) {
+            zoom = this.props.zoom_min;
+        }
+
+        this.keep_viewport_centered(zoom);
     }
 
     zoom_out() {
-        var zoom = this.state.zoom;
+        var zoom = this.props.zoom || this.state.zoom;
         var original_zoom = zoom;
         zoom /= zoom_multiplier;
-        //if (zoom < .15){zoom += .05;}
 
-        this.keep_viewport_centered(original_zoom, zoom);
+        if (this.props.zoom_max && zoom < this.props.zoom_max) {
+            zoom = this.props.zoom_max;
+        }
+
+        this.keep_viewport_centered(zoom);
     }
 
-    keep_viewport_centered(start_zoom, end_zoom) {
-        var map_width = this.state.width;
+    keep_viewport_centered(end_zoom) {
         var position = this.state.layer_position;
 
-        var new_center_position_on_map_x = (map_width / 2) * end_zoom;
+        var new_center_position_on_map_x = (this.state.width / 2) * end_zoom;
         var new_center_position_on_map_y = (this.state.height / 2) * end_zoom;
 
         position[0] = this.state.map_center[0] - new_center_position_on_map_x;
         position[1] = this.state.map_center[1] - new_center_position_on_map_y;
 
-        this.setState({
-            zoom: end_zoom,
-            layer_position: position,
-        });
+        if (this.props.handle_zoom) {
+            this.props.handle_zoom(end_zoom, position);
+        } else {
+            this.setState({
+                zoom: end_zoom,
+                layer_position: position,
+            });
+        }
     }
 
     render() {
@@ -129,10 +145,8 @@ export default class CanvasMap extends Component {
                 return React.cloneElement(child, {
                     width: this.state.width,
                     height: this.state.height,
-                    zoom: this.state.zoom,
-                    layer_position: this.state.layer_position,
-
-                    load_ground_layer: this.load_ground_layer,
+                    //zoom: this.props.zoom || this.state.zoom,
+                    //layer_position: this.props.layer_position || this.state.layer_position,
                 });
             }
             return child;
@@ -144,6 +158,7 @@ export default class CanvasMap extends Component {
                 style={map_style}
                 onWheel={this.handle_scroll}
                 onKeyDown={this.handle_key_press}
+                onClick={this.handle_click}
                 tabIndex="0"
             >
                 <Stage

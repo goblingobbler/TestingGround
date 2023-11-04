@@ -49,9 +49,10 @@ export default class CanvasImage extends React.Component {
     };
 
     render() {
+        let zoom = this.props.zoom || 1;
         let position = [this.props.position[0], this.props.position[1]];
-        let scaleX = this.props.zoom;
-        let scaleY = this.props.zoom;
+        let scaleX = zoom;
+        let scaleY = zoom;
         let size = this.props.size;
 
         var opacity = this.props.opacity || 1;
@@ -76,16 +77,6 @@ export default class CanvasImage extends React.Component {
                     scaleY={scaleY}
                     image={this.state.image}
                     opacity={opacity}
-                />
-
-                <Rect
-                    x={0}
-                    y={0}
-                    width={size[0]}
-                    height={size[1]}
-                    scaleX={this.props.zoom}
-                    scaleY={this.props.zoom}
-                    stroke="red"
                 />
             </Group>
         );
