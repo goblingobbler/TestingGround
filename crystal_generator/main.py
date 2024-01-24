@@ -11,7 +11,10 @@ from objects.gears import Gears
 def main():
 
     gear = Gears()
-    gear.gear_points()
+    faces = gear.make_gear_face()
+    
+    editor = STLEditor()
+    editor.output_face_list(face_list=faces, filename='gear.stl')
     
     '''
     vase = Vase()
