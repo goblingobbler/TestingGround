@@ -5,8 +5,15 @@ from objects.image_editor import ImageEditor
 from objects.stl_editor import STLEditor
 
 from objects.vase import Vase
+from objects.gears import Gears
+
 
 def main():
+
+    gear = Gears()
+    gear.gear_points()
+    
+    '''
     vase = Vase()
 
     #all_faces = vase.simple_helix_vase()
@@ -16,6 +23,7 @@ def main():
     
     editor = STLEditor()
     editor.output_face_list(face_list=all_faces, filename='vase.stl')
+    '''
 
     '''
     experiment = ImageEditor('input_images\\card_bold.png')
