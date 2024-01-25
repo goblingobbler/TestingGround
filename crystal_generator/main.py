@@ -10,8 +10,8 @@ from objects.gears import Gears
 
 def main():
 
-    gear = Gears()
-    faces = gear.make_gear_face()
+    gear = Gears(teeth=100)
+    faces = gear.make_gear_faces()
     
     editor = STLEditor()
     editor.output_face_list(face_list=faces, filename='gear.stl')
