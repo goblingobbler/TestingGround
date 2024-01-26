@@ -10,12 +10,21 @@ from objects.gears import Gears
 
 def main():
 
-    gear = Gears(teeth=100)
+    gear = Gears(teeth=10, module=1)
     faces = gear.make_gear_faces()
-    
     editor = STLEditor()
     editor.output_face_list(face_list=faces, filename='gear.stl')
     
+    gear = Gears(teeth=20, module=1)
+    faces = gear.make_gear_faces()
+    editor = STLEditor()
+    editor.output_face_list(face_list=faces, filename='gear2.stl')
+
+    gear = Gears(teeth=40, module=1)
+    faces = gear.make_gear_faces()
+    editor = STLEditor()
+    editor.output_face_list(face_list=faces, filename='gear3.stl')
+
     '''
     vase = Vase()
 

@@ -66,7 +66,7 @@ def find_circle(x1, y1, x2, y2, x3, y3):
 # https://geargenerator.com/
 
 class Gears():
-    def __init__(self, teeth=10, module=2):
+    def __init__(self, teeth=10, module=1):
         
         self.teeth = teeth
         self.teeth_angle = (2 * math.pi) / self.teeth
