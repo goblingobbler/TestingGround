@@ -2,3 +2,25 @@ html,
 body {
     background: #f5f5f5;
 }
+
+* {padding: 0px;margin: 0px;font-family:'Lato',sans-serif;}
+
+a, a:hover  {color:inherit;text-decoration:underline;}
+
+.transitions {
+	transition: all .5s ease-in-out;
+	-moz-transition: all .5s ease-in-out;
+	-webkit-transition: all .5s ease-in-out;
+	-o-transition: all .5s ease-in-out;
+}
+
+.transitionsFast {
+	transition: all .25s ease-in-out;
+	-moz-transition: all .25s ease-in-out;
+	-webkit-transition: all .25s ease-in-out;
+	-o-transition: all .25s ease-in-out;
+}
+
+img {
+    max-width: 100%;
+}

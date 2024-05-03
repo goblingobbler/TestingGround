@@ -41,3 +41,9 @@ class User(AbstractBaseUser):
 
     def to_json(self):
         return basic_jsonifying(self)
+
+    def has_perm(self, obj=None):
+        return True
+
+    def has_module_perms(self, app):
+        return True

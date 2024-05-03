@@ -10,12 +10,14 @@ def jwt_auth_middleware(get_response):
         try:
             authenticated = JWTAuthentication().authenticate(request)
             if authenticated:
+                print("Found JWT User")
                 request.user = authenticated[0]
             else:
-                request.user = AnonymousUser
+                # request.user = AnonymousUser
+                pass
         except exceptions.AuthenticationFailed as err:
             print(err)
-            request.user = AnonymousUser
+            # request.user = AnonymousUser
 
         response = get_response(request)
 

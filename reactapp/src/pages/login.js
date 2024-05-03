@@ -56,7 +56,7 @@ class Login extends Component {
 
     render() {
         let error = null;
-        if (this.state.error != '') {
+        if (this.state.error !== '') {
             error = <Alert type="danger">{this.state.error}</Alert>;
         }
         return (

@@ -1,4 +1,4 @@
-const logout = () => {
+const Logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('token_time');
@@ -8,4 +8,4 @@ const logout = () => {
     return null;
 };
 
-export default logout;
+export default Logout;

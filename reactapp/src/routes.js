@@ -1,4 +1,4 @@
-import { AuthedRoutes, AdminRoutes, Login, logout } from 'pages';
+import { Login, Logout, Landing } from 'pages';
 
 const routes = [
     {
@@ -7,27 +7,15 @@ const routes = [
     },
     {
         path: '/logout',
-        element: <logout />,
+        element: <Logout />,
     },
     {
         path: '/',
-        element: <AuthedRoutes />,
         children: [
             {
                 index: true,
                 path: '',
-                element: <div>Hello world!</div>,
-            },
-        ],
-    },
-    {
-        path: '/admin',
-        element: <AdminRoutes />,
-        children: [
-            {
-                index: true,
-                path: '',
-                element: <div>Hello admin!</div>,
+                element: <Landing />,
             },
         ],
     },
