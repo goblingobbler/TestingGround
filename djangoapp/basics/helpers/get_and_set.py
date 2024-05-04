@@ -1,13 +1,13 @@
 import logging
 
 
-def handle_get_or_set_request(request, model, id=None, many_get_relation=None):
+def handle_get_or_set_request(request, model, id=None, list_query=None):
     if request.method == "GET":
         if id:
             object = model.objects.get(id=id)
             json_response = object.to_json()
         else:
-            objects = many_get_relation.filter(active=True)
+            objects = list_query.filter(active=True)
 
             json_response = []
             for object in objects.all():

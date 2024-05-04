@@ -108,3 +108,5 @@ crystal_generator/output_images/
 factorio_clone/player/package-lock.json
 
 diffusion/
+
+djangoapp/db.sqlite3

@@ -1,87 +1,40 @@
 import React, { Component } from 'react';
-import $ from 'jquery';
 
-import { Image } from 'library';
-
-class Slide extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { show: false };
-    }
-
-    componentDidMount() {
-        setTimeout(
-            function () {
-                this.setState({ show: true });
-            }.bind(this),
-            this.props.delay,
-        );
-    }
-
-    render() {
-        return (
-            <div
-                class={`${this.props.name} slide transitions${
-                    this.state.show ? ' shown' : ''
-                }`}
-            >
-                {this.props.children}
-            </div>
-        );
-    }
-}
+import { Image, Slide } from 'library';
+import { Header, Banner, Project } from 'components';
+import { ajax_wrapper } from 'functions';
 
 class Landing extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            time: 500,
-            scroll: 0,
-        };
-
-        this.scroll_to_slide = this.scroll_to_slide.bind(this);
+        this.state = { projects: [] };
     }
 
     componentDidMount() {
-        this.setState(
-            { scroll: $(window).scrollTop() },
-            function () {
-                if (this.state.scroll > 0) {
-                    $('.titleUnderline').hide();
-                    $('.titleUnderscore').hide();
-                    setTimeout(function () {
-                        $('.titleUnderline').show();
-                        $('.titleUnderscore').show();
-                    }, this.state.time / 20);
-                } else {
-                    setTimeout(
-                        function () {
-                            $('.titleUnderline').width(500);
-                            setTimeout(function () {
-                                $('.titleUnderscore').css('top', 0);
-                            }, this.state.time / 2);
-                        }.bind(this),
-                        this.state.time,
-                    );
-                }
-            }.bind(this),
+        ajax_wrapper('GET', '/api/get_projects/', {}, (value) =>
+            this.setState({ projects: value }),
         );
     }
 
-    scroll_to_slide(className) {
-        $('html, body')
-            .get(0)
-            .scrollTo(0, $(className).offset().top - 40);
-    }
-
     render() {
-        let delay = 250;
-        if (this.state.scroll > 0) {
-            delay = 20;
+        let delay = 100;
+
+        let projects = [];
+        for (let item of this.state.projects) {
+            projects.push(
+                <Project
+                    name={item['name']}
+                    url={item['url']}
+                    image={item['image']}
+                />,
+            );
+            if (projects.length >= 6) {
+                break;
+            }
         }
 
         let slides = [
-            <Slide delay={delay} name="contacts">
+            <Slide delay={300 + delay} name="contacts">
                 <div className="inner">
                     <table style={{ width: '100%' }}>
                         <tr>
@@ -117,7 +70,7 @@ class Landing extends Component {
                 </div>
             </Slide>,
 
-            <Slide delay={delay * 2} name="skills">
+            <Slide delay={300 + delay * 2} name="skills">
                 <div className="inner">
                     <div className="skill">
                         <div className="skillTitle">Front-End</div>
@@ -199,104 +152,22 @@ class Landing extends Component {
                 </div>
             </Slide>,
 
-            <Slide delay={delay * 3} name="projectsHeader">
+            <Slide delay={300 + delay * 3} name="projectsHeader">
                 <div className="inner">
                     <div className="projectsTitle">Past Projects</div>
                 </div>
             </Slide>,
 
-            <Slide delay={delay * 4} name="projects">
+            <Slide delay={300 + delay * 4} name="projects">
                 <div className="inner">
-                    <a
-                        href="https://happiertraveler.com/"
-                        className="project"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div className="projectTitle">Happier Traveler</div>
-                        <Image
-                            className="projectImage"
-                            src="static/images/ht.JPG"
-                            alt="happier"
-                        />
-                    </a>
-
-                    <a
-                        href="https://dimension5workflow.com/"
-                        className="project"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div className="projectTitle">Dimension 5</div>
-                        <Image
-                            className="projectImage"
-                            src="static/images/dim5.JPG"
-                            alt="dim5"
-                        />
-                    </a>
-
-                    <a
-                        href="https://sponsr.com/"
-                        className="project"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div className="projectTitle">Sponsr</div>
-                        <Image
-                            className="projectImage"
-                            src="static/images/sponsr.JPG"
-                            alt="sponsr"
-                        />
-                    </a>
-
-                    <a
-                        href="https://www.framedmarketplace.com/"
-                        className="project"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div className="projectTitle">Framed Marketplace</div>
-                        <Image
-                            className="projectImage"
-                            src="static/images/framedmarketplace.JPG"
-                            alt="framed"
-                        />
-                    </a>
-
-                    <a
-                        href="http://sheds.millercodes.com/"
-                        className="project"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div className="projectTitle">Shed Customizer</div>
-                        <Image
-                            className="projectImage"
-                            src="static/images/sheds.JPG"
-                            alt="sheds"
-                        />
-                    </a>
-
-                    <a
-                        href="https://www.getawalkthrough.com/"
-                        className="project"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div className="projectTitle">Walkthrough</div>
-                        <Image
-                            className="projectImage"
-                            src="static/images/walkthrough.JPG"
-                            alt="walkthrough"
-                        />
-                    </a>
+                    {projects}
 
                     <br />
                     <br />
                     <br />
                     <div>
                         <a
-                            href="/all_projects.html"
+                            href="/all_projects"
                             className="btn btn-secondary"
                             style={{
                                 fontSize: '22px',
@@ -312,45 +183,45 @@ class Landing extends Component {
                 </div>
             </Slide>,
 
-            <Slide delay={delay * 5} name="snippets">
+            <Slide delay={300 + delay * 5} name="snippets">
                 <div className="inner">
                     <div className="snippetsTitle">Experimental Snippets</div>
-                    <a href="checkers.html" className="snip">
+                    <a href="checkers" className="snip">
                         <div className="snipTitle">Checkers</div>
                         <div className="snipDesc">
                             A simple checkers game build with jQuery
                         </div>
                     </a>
 
-                    <a href="solar-system.html" className="snip">
+                    <a href="solar-system" className="snip">
                         <div className="snipTitle">Solar System</div>
                         <div className="snipDesc">
                             The planets depicted in css
                         </div>
                     </a>
 
-                    <a href="circles.html" className="snip">
+                    <a href="circles" className="snip">
                         <div className="snipTitle">Circles</div>
                         <div className="snipDesc">
                             An experiment with perspective
                         </div>
                     </a>
 
-                    <a href="clock.html" className="snip">
+                    <a href="clock" className="snip">
                         <div className="snipTitle">Clock</div>
                         <div className="snipDesc">
                             A calming clock to help you track time in style
                         </div>
                     </a>
 
-                    <a href="colors.html" className="snip">
+                    <a href="colors" className="snip">
                         <div className="snipTitle">Colors</div>
                         <div className="snipDesc">
                             Explore the color spectrum
                         </div>
                     </a>
 
-                    <a href="rts_demo/index.html" className="snip">
+                    <a href="rts_demo" className="snip">
                         <div className="snipTitle">RTS Demo</div>
                         <div className="snipDesc">
                             WORK IN PROGRESS
@@ -364,66 +235,10 @@ class Landing extends Component {
 
         return (
             <div>
-                <div className="header">
-                    <div className="headerInner">
-                        <div className="links">
-                            <div
-                                className="link"
-                                onClick={() =>
-                                    this.scroll_to_slide('.contacts')
-                                }
-                            >
-                                Contact Me
-                            </div>
-                            <div
-                                className="link"
-                                onClick={() => this.scroll_to_slide('.skills')}
-                            >
-                                Skills
-                            </div>
-                            <div
-                                className="link"
-                                onClick={() =>
-                                    this.scroll_to_slide('.projects')
-                                }
-                            >
-                                Projects
-                            </div>
-                            <div
-                                className="link"
-                                onClick={() =>
-                                    this.scroll_to_slide('.snippets')
-                                }
-                            >
-                                Snippets
-                            </div>
-                        </div>
-                        <div
-                            className="logo link"
-                            onClick={() => this.scroll_to_slide('.welcome')}
-                        >
-                            DM
-                        </div>
-                    </div>
-                </div>
+                <Header links={true} />
 
                 <div className="slideContainer">
-                    <div className="welcome slide transitions">
-                        <div className="inner">
-                            <div className="titleContainer">
-                                <div className="title">David Miller</div>
-                                <div className="titleUnderline transitions"></div>
-                                <div className="titleUnderscore transitions">
-                                    Freelance Web Developer
-                                </div>
-                            </div>
-                            <div className="titlePitch">
-                                I write custom web applications, convert designs
-                                into working sites, and troubleshoot existing
-                                sites.
-                            </div>
-                        </div>
-                    </div>
+                    <Banner />
                     {slides}
                 </div>
             </div>
