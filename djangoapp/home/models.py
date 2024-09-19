@@ -9,3 +9,5 @@ class Project(BaseModel):
 
     url = models.CharField(max_length=1000, blank=True, default="")
     image = models.CharField(max_length=1000, blank=True, default="")
+
+    live = models.BooleanField(default=True)

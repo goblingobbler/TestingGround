@@ -1,6 +1,16 @@
 import logging
 
 
+def clean_parameters(parameters):
+    for key in parameters:
+        if parameters[key] == "true":
+            parameters[key] = True
+        if parameters[key] == "false":
+            parameters[key] = False
+
+    return parameters
+
+
 def handle_get_or_set_request(request, model, id=None, list_query=None):
     if request.method == "GET":
         if id:

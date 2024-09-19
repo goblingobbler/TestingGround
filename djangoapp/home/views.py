@@ -4,14 +4,14 @@ from django.shortcuts import render
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 
-from basics.helpers.get_and_set import handle_get_or_set_request
+from basics.helpers.get_and_set import clean_parameters, handle_get_or_set_request
 from home.models import Project
 
 
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def GetProjects(request):
-    parameters = request.GET.dict()
+    parameters = clean_parameters(request.GET.dict())
 
     json_response = handle_get_or_set_request(
         request,

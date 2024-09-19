@@ -4,7 +4,7 @@ from django.db.models import Q, Prefetch, Count, Sum, Avg, Max, F
 from home.models import *
 from user.models import *
 
-PROJECT_DATA = [
+OLD_PROJECT_DATA = [
     {
         "type": "website",
         "name": "Shrinkjet",
@@ -43,27 +43,36 @@ PROJECT_DATA = [
     },
     {
         "type": "website",
-        "name": "Walkthrough",
-        "url": "https://www.getawalkthrough.com/",
-        "image": "static/images/walkthrough.JPG",
-    },
-    {
-        "type": "website",
-        "name": "Shed Customizer",
-        "url": "http://sheds.millercodes.com/",
-        "image": "static/images/sheds.JPG",
-    },
-    {
-        "type": "website",
         "name": "Framed Marketplace",
-        "url": "https://www.framedmarketplace.com/",
+        "url": "",
         "image": "static/images/framedmarketplace.JPG",
     },
     {
         "type": "website",
         "name": "Sponsr",
-        "url": "https://sponsr.com/",
+        "url": "",
         "image": "static/images/sponsr.JPG",
+    },
+    {
+        "type": "website",
+        "name": "Happier Traveler",
+        "url": "",
+        "image": "static/images/ht.JPG",
+    },
+    {
+        "type": "website",
+        "name": "Walkthrough",
+        "url": "",
+        "image": "static/images/walkthrough.JPG",
+    },
+]
+
+PROJECT_DATA = [
+    {
+        "type": "website",
+        "name": "Shed Customizer",
+        "url": "http://sheds.millercodes.com/",
+        "image": "static/images/sheds.JPG",
     },
     {
         "type": "website",
@@ -73,9 +82,15 @@ PROJECT_DATA = [
     },
     {
         "type": "website",
-        "name": "Happier Traveler",
-        "url": "https://happiertraveler.com/",
-        "image": "static/images/ht.JPG",
+        "name": "MathAnex",
+        "url": "https://mathanex.com/",
+        "image": "static/images/mathanex.png",
+    },
+    {
+        "type": "website",
+        "name": "ForgottenMaps",
+        "url": "https://forgottenmaps.com/",
+        "image": "static/images/forgottenmaps.png",
     },
 ]
 
@@ -85,7 +100,19 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         Project.objects.all().delete()
 
+        for data in OLD_PROJECT_DATA:
+            data["live"] = False
+
+            project = Project.objects.filter(name=data["name"]).first()
+
+            if not project:
+                project = Project.objects.create(**data)
+
+            print(project.to_json())
+
         for data in PROJECT_DATA:
+            data["live"] = True
+
             project = Project.objects.filter(name=data["name"]).first()
 
             if not project:

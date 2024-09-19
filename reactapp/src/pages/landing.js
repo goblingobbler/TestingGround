@@ -11,7 +11,7 @@ class Landing extends Component {
     }
 
     componentDidMount() {
-        ajax_wrapper('GET', '/api/get_projects/', {}, (value) =>
+        ajax_wrapper('GET', '/api/get_projects/?live=true', {}, (value) =>
             this.setState({ projects: value }),
         );
     }
