@@ -18,8 +18,8 @@ urlpatterns = [
     path("circles", circles, name="circles"),
     path("clock", clock, name="clock"),
     path("colors", colors, name="colors"),
-    path("rtsDemo", rtsDemo, name="rtsDemo"),
-    path("solarSystem", solarSystem, name="solarSystem"),
+    path("rts-demo", rtsDemo, name="rtsDemo"),
+    path("solar-system", solarSystem, name="solarSystem"),
     # Catch statements for React
     re_path(r"", Index, name="index"),
 ]

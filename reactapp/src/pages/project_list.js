@@ -31,12 +31,12 @@ class ProjectList extends Component {
         return (
             <div>
                 <Header />
-                <div class="slideContainer">
+                <div class="slide-container">
                     <Banner />
 
                     <Slide delay={250} name="projects">
                         <div class="inner">
-                            <div class="projectsTitle">All Projects</div>
+                            <div class="projects-title">All Projects</div>
 
                             {projects}
                         </div>

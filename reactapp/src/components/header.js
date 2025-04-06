@@ -48,7 +48,7 @@ class Header extends Component {
         }
         return (
             <div className="header">
-                <div className="headerInner">
+                <div className="header-inner">
                     {links}
                     <div
                         className="logo link"

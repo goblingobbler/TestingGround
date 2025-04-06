@@ -12,9 +12,9 @@ class Banner extends Component {
     componentDidMount() {
         setTimeout(
             function () {
-                $('.titleUnderline').width(500);
+                $('.title-underline').width(500);
                 setTimeout(function () {
-                    $('.titleUnderscore').css('top', 0);
+                    $('.title-underscore').css('top', 0);
                 }, this.state.time / 2);
             }.bind(this),
             this.state.time,
@@ -25,14 +25,14 @@ class Banner extends Component {
         return (
             <div className="welcome slide transitions">
                 <div className="inner">
-                    <div className="titleContainer">
+                    <div className="title-container">
                         <div className="title">David Miller</div>
-                        <div className="titleUnderline transitions"></div>
-                        <div className="titleUnderscore transitions">
+                        <div className="title-underline transitions"></div>
+                        <div className="title-underscore transitions">
                             Freelance Web Developer
                         </div>
                     </div>
-                    <div className="titlePitch">
+                    <div className="title-pitch">
                         I write custom web applications, convert designs into
                         working sites, and troubleshoot existing sites.
                     </div>

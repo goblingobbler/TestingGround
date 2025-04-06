@@ -72,9 +72,11 @@ class Landing extends Component {
 
             <Slide delay={300 + delay * 2} name="skills">
                 <div className="inner">
-                    <div className="skill">
-                        <div className="skillTitle">Front-End</div>
-                        <div className="skillItems">
+                    <div className="skill simple-card">
+                        <div className="simple-card-header skill-title">
+                            Front-End
+                        </div>
+                        <div className="skill-items">
                             <Image
                                 className="transitions"
                                 alt="HTML"
@@ -98,9 +100,11 @@ class Landing extends Component {
                         </div>
                     </div>
 
-                    <div className="skill">
-                        <div className="skillTitle">Applications</div>
-                        <div className="skillItems">
+                    <div className="skill simple-card">
+                        <div className="simple-card-header skill-title">
+                            Applications
+                        </div>
+                        <div className="skill-items">
                             <Image
                                 className="transitions"
                                 alt="Python"
@@ -129,9 +133,11 @@ class Landing extends Component {
                         </div>
                     </div>
 
-                    <div className="skill">
-                        <div className="skillTitle">Databases</div>
-                        <div className="skillItems">
+                    <div className="skill simple-card">
+                        <div className="simple-card-header skill-title">
+                            Databases
+                        </div>
+                        <div className="skill-items">
                             <Image
                                 className="transitions"
                                 alt="MongoDB"
@@ -152,9 +158,9 @@ class Landing extends Component {
                 </div>
             </Slide>,
 
-            <Slide delay={300 + delay * 3} name="projectsHeader">
+            <Slide delay={300 + delay * 3} name="projects-header">
                 <div className="inner">
-                    <div className="projectsTitle">Past Projects</div>
+                    <div className="projects-title">Past Projects</div>
                 </div>
             </Slide>,
 
@@ -162,10 +168,7 @@ class Landing extends Component {
                 <div className="inner">
                     {projects}
 
-                    <br />
-                    <br />
-                    <br />
-                    <div>
+                    <div style={{ margin: '40px 0px 60px' }}>
                         <a
                             href="/all_projects"
                             className="btn btn-secondary"
@@ -177,53 +180,50 @@ class Landing extends Component {
                             All Projects
                         </a>
                     </div>
-                    <br />
-                    <br />
-                    <br />
                 </div>
             </Slide>,
 
             <Slide delay={300 + delay * 5} name="snippets">
                 <div className="inner">
-                    <div className="snippetsTitle">Experimental Snippets</div>
+                    <div className="snippets-title">Experimental Snippets</div>
                     <a href="checkers" className="snip">
-                        <div className="snipTitle">Checkers</div>
-                        <div className="snipDesc">
+                        <div className="snip-title">Checkers</div>
+                        <div className="snip-desc">
                             A simple checkers game build with jQuery
                         </div>
                     </a>
 
                     <a href="solar-system" className="snip">
-                        <div className="snipTitle">Solar System</div>
-                        <div className="snipDesc">
+                        <div className="snip-title">Solar System</div>
+                        <div className="snip-desc">
                             The planets depicted in css
                         </div>
                     </a>
 
                     <a href="circles" className="snip">
-                        <div className="snipTitle">Circles</div>
-                        <div className="snipDesc">
+                        <div className="snip-title">Circles</div>
+                        <div className="snip-desc">
                             An experiment with perspective
                         </div>
                     </a>
 
                     <a href="clock" className="snip">
-                        <div className="snipTitle">Clock</div>
-                        <div className="snipDesc">
+                        <div className="snip-title">Clock</div>
+                        <div className="snip-desc">
                             A calming clock to help you track time in style
                         </div>
                     </a>
 
                     <a href="colors" className="snip">
-                        <div className="snipTitle">Colors</div>
-                        <div className="snipDesc">
+                        <div className="snip-title">Colors</div>
+                        <div className="snip-desc">
                             Explore the color spectrum
                         </div>
                     </a>
 
-                    <a href="rts_demo" className="snip">
-                        <div className="snipTitle">RTS Demo</div>
-                        <div className="snipDesc">
+                    <a href="rts-demo" className="snip">
+                        <div className="snip-title">RTS Demo</div>
+                        <div className="snip-desc">
                             WORK IN PROGRESS
                             <br />
                             Creating a RTS game using HTML
@@ -237,7 +237,7 @@ class Landing extends Component {
             <div>
                 <Header links={true} />
 
-                <div className="slideContainer">
+                <div className="slide-container">
                     <Banner />
                     {slides}
                 </div>

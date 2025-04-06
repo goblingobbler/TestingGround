@@ -1,9 +1,14 @@
 html,
 body {
     background: #f5f5f5;
+    font-size: 14px;
 }
 
-* {padding: 0px;margin: 0px;font-family:'Lato',sans-serif;}
+* {
+    padding: 0px;
+    margin: 0px;
+    font-family: "Lato", sans-serif;
+}
 
 a, a:hover  {color:inherit;text-decoration:underline;}
 
@@ -14,7 +19,7 @@ a, a:hover  {color:inherit;text-decoration:underline;}
 	-o-transition: all .5s ease-in-out;
 }
 
-.transitionsFast {
+.transitions-fast {
 	transition: all .25s ease-in-out;
 	-moz-transition: all .25s ease-in-out;
 	-webkit-transition: all .25s ease-in-out;
@@ -23,4 +28,30 @@ a, a:hover  {color:inherit;text-decoration:underline;}
 
 img {
     max-width: 100%;
+}
+
+.background-img {
+    background-position: top;
+    background-size: cover;
+}
+
+.simple-card-container {
+    position: relative;
+    background: #f2f6ff;
+    padding: 5px;
+    box-shadow: 2px 2px 10px rgb(0 0 0 / 10%) inset;
+    margin-bottom: 10px;
+}
+
+.simple-card {
+    padding: 10px 20px;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0,0,0,.1);
+    border-radius: 16px;
+    margin: 10px;
+    display: flow-root;
+}
+
+.simple-card-header {
+    margin: -10px -20px 0px;
 }
