@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.shortcuts import render
+
 from home.views import *
 from basics.views import Index
 
@@ -13,6 +14,8 @@ urlpatterns = [
     path("api/get_projects/", GetProjects, name="GetProjects"),
     # Base API
     path("api/", include("basics.urls")),
+    # Gear API
+    path("api/gears/", include("gears.urls")),
     # Random Projects
     path("checkers", checkers, name="checkers"),
     path("circles", circles, name="circles"),

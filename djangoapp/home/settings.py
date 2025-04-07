@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "basics",
     "user",
     "home",
+    "gears",
 ]
 
 MIDDLEWARE = [

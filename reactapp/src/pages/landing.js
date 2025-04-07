@@ -4,7 +4,7 @@ import { Image, Slide } from 'library';
 import { Header, Banner, Project } from 'components';
 import { ajax_wrapper } from 'functions';
 
-class Landing extends Component {
+export default class Landing extends Component {
     constructor(props) {
         super(props);
         this.state = { projects: [] };
@@ -245,5 +245,3 @@ class Landing extends Component {
         );
     }
 }
-
-export default Landing;

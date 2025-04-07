@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Link, Image } from 'library';
+import { Link } from 'library';
 
 export default class Project extends Component {
     render() {

@@ -5,7 +5,8 @@ from PIL import Image, ImageDraw
 
 IMAGE_SCALE = 2000
 
-PRESSURE_ANGLE = 20 #Degrees
+PRESSURE_ANGLE = 20  # Degrees
+
 
 def deg_to_rad(deg):
     return deg * (math.pi / 180)
@@ -14,60 +15,64 @@ def deg_to_rad(deg):
 def rad_to_deg(rad):
     return rad * (180 / math.pi)
 
-def find_circle(x1, y1, x2, y2, x3, y3):
-    x12 = x1 - x2; 
-    x13 = x1 - x3; 
- 
-    y12 = y1 - y2; 
-    y13 = y1 - y3; 
- 
-    y31 = y3 - y1; 
-    y21 = y2 - y1; 
- 
-    x31 = x3 - x1; 
-    x21 = x2 - x1; 
- 
-    # x1^2 - x3^2 
-    sx13 = pow(x1, 2) - pow(x3, 2); 
- 
-    # y1^2 - y3^2 
-    sy13 = pow(y1, 2) - pow(y3, 2); 
- 
-    sx21 = pow(x2, 2) - pow(x1, 2); 
-    sy21 = pow(y2, 2) - pow(y1, 2); 
- 
-    f = (((sx13) * (x12) + (sy13) *
-          (x12) + (sx21) * (x13) +
-          (sy21) * (x13)) / (2 *
-          ((y31) * (x12) - (y21) * (x13))));
-             
-    g = (((sx13) * (y12) + (sy13) * (y12) +
-          (sx21) * (y13) + (sy21) * (y13)) /
-          (2 * ((x31) * (y12) - (x21) * (y13)))); 
- 
-    c = (-pow(x1, 2) - pow(y1, 2) -
-         2 * g * x1 - 2 * f * y1); 
- 
-    # eqn of circle be x^2 + y^2 + 2*g*x + 2*f*y + c = 0 
-    # where centre is (h = -g, k = -f) and 
-    # radius r as r^2 = h^2 + k^2 - c 
-    h = -g; 
-    k = -f; 
-    sqr_of_r = h * h + k * k - c; 
- 
-    # r is the radius 
-    r = sqrt(sqr_of_r); 
- 
-    #print("Centre = (", h, ", ", k, ")"); 
-    #print("Radius = ", r); 
 
-    return [h,k], r
+def find_circle(x1, y1, x2, y2, x3, y3):
+    x12 = x1 - x2
+    x13 = x1 - x3
+
+    y12 = y1 - y2
+    y13 = y1 - y3
+
+    y31 = y3 - y1
+    y21 = y2 - y1
+
+    x31 = x3 - x1
+    x21 = x2 - x1
+
+    # x1^2 - x3^2
+    sx13 = pow(x1, 2) - pow(x3, 2)
+
+    # y1^2 - y3^2
+    sy13 = pow(y1, 2) - pow(y3, 2)
+
+    sx21 = pow(x2, 2) - pow(x1, 2)
+    sy21 = pow(y2, 2) - pow(y1, 2)
+
+    f = ((sx13) * (x12) + (sy13) * (x12) + (sx21) * (x13) + (sy21) * (x13)) / (
+        2 * ((y31) * (x12) - (y21) * (x13))
+    )
+
+    g = ((sx13) * (y12) + (sy13) * (y12) + (sx21) * (y13) + (sy21) * (y13)) / (
+        2 * ((x31) * (y12) - (x21) * (y13))
+    )
+
+    c = -pow(x1, 2) - pow(y1, 2) - 2 * g * x1 - 2 * f * y1
+
+    # eqn of circle be x^2 + y^2 + 2*g*x + 2*f*y + c = 0
+    # where centre is (h = -g, k = -f) and
+    # radius r as r^2 = h^2 + k^2 - c
+    h = -g
+    k = -f
+    sqr_of_r = h * h + k * k - c
+
+    # r is the radius
+    r = sqrt(sqr_of_r)
+
+    # print("Centre = (", h, ", ", k, ")");
+    # print("Radius = ", r);
+
+    return [h, k], r
+
 
 # https://geargenerator.com/
 
-class Gears():
+GEAR_SIDE_POINTS = 50
+GEAR_TIP_POINTS = 10
+GEAR_INSIDE_POINTS = 20
+
+
+class Gear:
     def __init__(self, teeth=10, module=1):
-        
         self.teeth = teeth
         self.teeth_angle = (2 * math.pi) / self.teeth
 
@@ -82,9 +87,9 @@ class Gears():
         self.tooth_depth = 2.25 * self.module
 
         self.working_depth = 2.0 * self.module
-        self.root_clearance = .25 * self.module
+        self.root_clearance = 0.25 * self.module
 
-        self.fillet_radius = .38 * self.module
+        self.fillet_radius = 0.38 * self.module
 
         self.base_radius = self.radius * math.cos(self.pressure_angle)
         self.tip_radius = self.radius + self.addendum
@@ -110,32 +115,36 @@ class Gears():
             inner_points.append(first_point)
             inner_points.append(last_point)
 
-            base_point = self.rotate([middle_radius, 0], self.teeth_angle / 4 + self.teeth_angle * i)
+            base_point = self.rotate(
+                [middle_radius, 0], self.teeth_angle / 4 + self.teeth_angle * i
+            )
             for point in points:
                 new_point = self.rotate(point, self.teeth_angle * i)
                 if last_point:
-                    faces.append([
-                        [base_point[0], base_point[1], 0],
-                        [last_point[0], last_point[1], 0],
-                        [new_point[0], new_point[1], 0],
-                    ])
+                    faces.append(
+                        [
+                            [base_point[0], base_point[1], 0],
+                            [last_point[0], last_point[1], 0],
+                            [new_point[0], new_point[1], 0],
+                        ]
+                    )
 
                 last_point = new_point
 
         last_point = inner_points[-1]
         for point in inner_points:
             if last_point:
-                faces.append([
-                    [0, 0, 0],
-                    [last_point[0], last_point[1], 0],
-                    [point[0], point[1], 0],
-                ])
+                faces.append(
+                    [
+                        [0, 0, 0],
+                        [last_point[0], last_point[1], 0],
+                        [point[0], point[1], 0],
+                    ]
+                )
 
             last_point = point
 
-
         return faces
-
 
     def gear_points(self):
         radius = self.involute_radius
@@ -143,14 +152,19 @@ class Gears():
             radius = self.base_radius
 
         diff = self.tip_radius - radius
-        step = diff/50
+        step = diff / GEAR_SIDE_POINTS
 
         # Involute Curve Points
         points = []
         inverted_points = []
 
         reference_point = self.get_involute_point(self.radius)
-        reference_angle = self.get_angle_of_circle_points(reference_point, [reference_point[0], -1 * reference_point[1]], [0,0], self.radius)
+        reference_angle = self.get_angle_of_circle_points(
+            reference_point,
+            [reference_point[0], -1 * reference_point[1]],
+            [0, 0],
+            self.radius,
+        )
 
         while radius <= self.tip_radius:
             point = self.get_involute_point(radius)
@@ -158,11 +172,13 @@ class Gears():
             new_point = self.rotate(point, 0)
             points.append(new_point)
 
-            inverted_new_point = self.rotate([point[0],-1 * point[1]], reference_angle + self.teeth_angle / 2)
+            inverted_new_point = self.rotate(
+                [point[0], -1 * point[1]], reference_angle + self.teeth_angle / 2
+            )
             inverted_points.append(inverted_new_point)
-            
+
             radius += step
-        
+
         inverted_points.reverse()
 
         # Fillet Curve Points
@@ -170,17 +186,29 @@ class Gears():
         inverted_fillet_points = []
         first_point = inverted_points[-1]
         second_point = self.rotate(points[0], self.teeth_angle)
-        third_point = self.rotate([self.root_radius, 0], (self.teeth_angle) * (3/4) + reference_angle/2)
-    
-        center, radius = find_circle(
-            first_point[0], first_point[1], 
-            third_point[0], third_point[1],
-            second_point[0], second_point[1], 
+        third_point = self.rotate(
+            [self.root_radius, 0], (self.teeth_angle) * (3 / 4) + reference_angle / 2
         )
-        inside_angle = self.get_angle_of_circle_points(first_point, second_point, center, radius, invert_positive=True, print_image=True)
-        print('center', center, 'radius', radius, 'inside_angle', inside_angle)
 
-        for i in range(20):
+        center, radius = find_circle(
+            first_point[0],
+            first_point[1],
+            third_point[0],
+            third_point[1],
+            second_point[0],
+            second_point[1],
+        )
+        inside_angle = self.get_angle_of_circle_points(
+            first_point,
+            second_point,
+            center,
+            radius,
+            invert_positive=True,
+            print_image=True,
+        )
+        print("center", center, "radius", radius, "inside_angle", inside_angle)
+
+        for i in range(GEAR_INSIDE_POINTS):
             if i == 0:
                 continue
 
@@ -192,23 +220,25 @@ class Gears():
             point = self.rotate(second_point, angle, center=center)
             point = self.rotate(point, -self.teeth_angle)
             inverted_fillet_points.append(point)
-                
+
         inverted_fillet_points.reverse()
 
         # Tip Curve Points
         tip_points = []
         inverted_tip_points = []
-        outside_angle = self.get_angle_of_circle_points(points[-1], inverted_points[0], [0,0], self.tip_radius)
-        for i in range(10):
+        outside_angle = self.get_angle_of_circle_points(
+            points[-1], inverted_points[0], [0, 0], self.tip_radius
+        )
+        for i in range(GEAR_TIP_POINTS):
             if i == 0:
                 continue
 
             angle = (outside_angle / 20) * i
-            
-            point = self.rotate(points[-1], angle, center=[0,0])
+
+            point = self.rotate(points[-1], angle, center=[0, 0])
             tip_points.append(point)
 
-            point = self.rotate(inverted_points[0], -angle, center=[0,0])
+            point = self.rotate(inverted_points[0], -angle, center=[0, 0])
             inverted_tip_points.append(point)
 
         inverted_tip_points.reverse()
@@ -219,14 +249,14 @@ class Gears():
         points.extend(fillet_points)
         points = inverted_fillet_points + points
 
-        print('Total Points', len(points))
+        print("Total Points", len(points))
         final_points = []
         for i in range(1):
             for point in points:
-                    new_point = self.rotate(point, self.teeth_angle * i)
-                    final_points.append(new_point)
+                new_point = self.rotate(point, self.teeth_angle * i)
+                final_points.append(new_point)
 
-        self.print_new_image(final_points)
+        # self.print_new_image(final_points)
 
         return points
 
@@ -238,8 +268,10 @@ class Gears():
         y = radius * math.sin(inverse_angle)
 
         return [x, y]
-    
-    def get_angle_of_circle_points(self, a, b, center, radius, invert_positive=False, print_image=False):
+
+    def get_angle_of_circle_points(
+        self, a, b, center, radius, invert_positive=False, print_image=False
+    ):
         centered_a = [
             a[0] - center[0],
             a[1] - center[1],
@@ -253,9 +285,9 @@ class Gears():
             centered_a[1] + (centered_b[1] - centered_a[1]) / 2,
         ]
         chord_distance = self.distance(centered_a, centered_b)
-        center_distance = self.distance(midpoint, [0,0])
+        center_distance = self.distance(midpoint, [0, 0])
 
-        '''
+        """
         return math.acos(
             (
                 math.pow(2 * radius, 2) - 
@@ -263,37 +295,30 @@ class Gears():
             ) / 
             math.pow(2 * radius, 2)
         )
-        '''
+        """
 
         points = [
-            [0,0],
+            [0, 0],
             centered_a,
             centered_b,
             midpoint,
         ]
 
         if print_image:
-            print('CIRCLE POINTS', points)
-            self.print_new_image(points, filename='fillet_test.png', circles=False)
+            print("CIRCLE POINTS", points)
+            # self.print_new_image(points, filename="fillet_test.png", circles=False)
 
-        angle = 2 * math.atan(
-            chord_distance / (2 * center_distance)
-        )
+        angle = 2 * math.atan(chord_distance / (2 * center_distance))
 
         if invert_positive and midpoint[0] > 0 and midpoint[1] > 0:
             angle = 2 * math.pi - angle
 
         return angle
 
-
-    
     def distance(self, a, b):
-        return math.sqrt(
-            math.pow(a[0] - b[0], 2) +
-            math.pow(a[1] - b[1], 2)
-        )
+        return math.sqrt(math.pow(a[0] - b[0], 2) + math.pow(a[1] - b[1], 2))
 
-    def rotate(self, point, angle, center=[0,0]):
+    def rotate(self, point, angle, center=[0, 0]):
         """
         Rotate a point counterclockwise by a given angle around a given origin.
 
@@ -307,7 +332,7 @@ class Gears():
 
         return [qx, qy]
 
-    def print_new_image(self, points, filename='output.png', circles=True):
+    def print_new_image(self, points, filename="output.png", circles=True):
         new_image = Image.new("RGB", [IMAGE_SCALE, IMAGE_SCALE], (255, 255, 255, 0))
 
         scale = IMAGE_SCALE / (self.tip_radius * 2 + 10)
@@ -317,28 +342,40 @@ class Gears():
             for i in range(360):
                 angle = (math.pi * 2 / 360) * i
                 new_point = self.rotate([self.radius, 0], angle)
-                new_image.putpixel((
-                    int(new_point[0] * scale + (IMAGE_SCALE / 2)), 
-                    int(new_point[1] * scale + (IMAGE_SCALE / 2))
-                ), (0, 0, 255, 1))
+                new_image.putpixel(
+                    (
+                        int(new_point[0] * scale + (IMAGE_SCALE / 2)),
+                        int(new_point[1] * scale + (IMAGE_SCALE / 2)),
+                    ),
+                    (0, 0, 255, 1),
+                )
 
                 new_point = self.rotate([self.base_radius, 0], angle)
-                new_image.putpixel((
-                    int(new_point[0] * scale + (IMAGE_SCALE / 2)), 
-                    int(new_point[1] * scale + (IMAGE_SCALE / 2))
-                ), (255, 0, 0, 1))
+                new_image.putpixel(
+                    (
+                        int(new_point[0] * scale + (IMAGE_SCALE / 2)),
+                        int(new_point[1] * scale + (IMAGE_SCALE / 2)),
+                    ),
+                    (255, 0, 0, 1),
+                )
 
                 new_point = self.rotate([self.tip_radius, 0], angle)
-                new_image.putpixel((
-                    int(new_point[0] * scale + (IMAGE_SCALE / 2)), 
-                    int(new_point[1] * scale + (IMAGE_SCALE / 2))
-                ), (0, 0, 255, 1))
+                new_image.putpixel(
+                    (
+                        int(new_point[0] * scale + (IMAGE_SCALE / 2)),
+                        int(new_point[1] * scale + (IMAGE_SCALE / 2)),
+                    ),
+                    (0, 0, 255, 1),
+                )
 
                 new_point = self.rotate([self.root_radius, 0], angle)
-                new_image.putpixel((
-                    int(new_point[0] * scale + (IMAGE_SCALE / 2)), 
-                    int(new_point[1] * scale + (IMAGE_SCALE / 2))
-                ), (0, 0, 255, 1))
+                new_image.putpixel(
+                    (
+                        int(new_point[0] * scale + (IMAGE_SCALE / 2)),
+                        int(new_point[1] * scale + (IMAGE_SCALE / 2)),
+                    ),
+                    (0, 0, 255, 1),
+                )
 
             for i in range(IMAGE_SCALE):
                 new_image.putpixel((int(IMAGE_SCALE / 2), i), (0, 0, 0, 1))
@@ -346,15 +383,15 @@ class Gears():
 
         count = 0
         for point in points:
-            new_image.putpixel((
-                int(point[0] * scale + (IMAGE_SCALE / 2)), 
-                int(point[1] * scale + (IMAGE_SCALE / 2))
-            ), (0, count % 255, 0, 1))
+            new_image.putpixel(
+                (
+                    int(point[0] * scale + (IMAGE_SCALE / 2)),
+                    int(point[1] * scale + (IMAGE_SCALE / 2)),
+                ),
+                (0, count % 255, 0, 1),
+            )
 
             count += 2
 
-        
-
-        print('## Creating Image', filename)
-        new_image.save('output_images/%s' % (filename))
-
+        print("## Creating Image", filename)
+        new_image.save("output_images/%s" % (filename))

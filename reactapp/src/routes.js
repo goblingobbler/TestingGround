@@ -1,4 +1,4 @@
-import { Login, Logout, Landing, AllProjects } from 'pages';
+import { Login, Logout, Landing, AllProjects, Gears } from 'pages';
 
 const routes = [
     {
@@ -22,6 +22,10 @@ const routes = [
     {
         path: '/all_projects',
         element: <AllProjects />,
+    },
+    {
+        path: '/gears',
+        element: <Gears />,
     },
 ];
 
