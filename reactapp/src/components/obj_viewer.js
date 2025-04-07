@@ -58,7 +58,7 @@ export default class OBJViewer extends Component {
             controls.rotateSpeed = 0.5;
             controls.target.set(0, 0, 0);
 
-            camera.position.z = 5;
+            camera.position.z = 50;
 
             ajax_wrapper('GET', '/api/gears/create/', {}, (value) =>
                 this.setState({ input_text: value }, this.load_gear),
@@ -82,7 +82,7 @@ export default class OBJViewer extends Component {
         requestAnimationFrame(this.animate);
 
         if (this.state.gear) {
-            this.state.gear.rotation.z += 0.01;
+            this.state.gear.rotation.z += 0.001;
         }
 
         this.state.renderer.render(this.state.scene, this.state.camera);

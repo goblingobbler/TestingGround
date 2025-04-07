@@ -66,7 +66,7 @@ def find_circle(x1, y1, x2, y2, x3, y3):
 
 # https://geargenerator.com/
 
-GEAR_SIDE_POINTS = 50
+GEAR_SIDE_POINTS = 30
 GEAR_TIP_POINTS = 10
 GEAR_INSIDE_POINTS = 20
 
@@ -99,9 +99,85 @@ class Gear:
 
         print(self.tip_radius, self.radius, self.base_radius, self.root_radius)
 
-    def make_gear_faces(self):
+    def build(self, width=2):
+
         points = self.gear_points()
 
+        faces = self.make_gear_faces(points, z_position=width / 2)
+        second_faces = self.make_gear_faces(
+            points, z_position=-1 * width / 2, reverse=True
+        )
+        faces.extend(second_faces)
+
+        third_faces = self.bridge_faces(points, width=width)
+        faces.extend(third_faces)
+
+        return faces
+
+    def bridge_faces(self, points, width=2):
+        faces = []
+        last_point = None
+
+        for i in range(self.teeth):
+
+            if last_point:
+                first_point = self.rotate(points[0], self.teeth_angle * i)
+                new_face = [
+                    [last_point[0], last_point[1], width / 2],
+                    [last_point[0], last_point[1], -1 * width / 2],
+                    [first_point[0], first_point[1], -1 * width / 2],
+                ]
+                faces.append(new_face)
+
+                new_face = [
+                    [first_point[0], first_point[1], -1 * width / 2],
+                    [first_point[0], first_point[1], width / 2],
+                    [last_point[0], last_point[1], width / 2],
+                ]
+                faces.append(new_face)
+            else:
+                very_first_point = self.rotate(points[0], self.teeth_angle * i)
+
+            last_point = None  # self.rotate(points[-1], self.teeth_angle * i)
+
+            for point in points:
+                new_point = self.rotate(point, self.teeth_angle * i)
+
+                if last_point:
+                    new_face = [
+                        [last_point[0], last_point[1], width / 2],
+                        [last_point[0], last_point[1], -1 * width / 2],
+                        [new_point[0], new_point[1], -1 * width / 2],
+                    ]
+                    faces.append(new_face)
+
+                    new_face = [
+                        [new_point[0], new_point[1], -1 * width / 2],
+                        [new_point[0], new_point[1], width / 2],
+                        [last_point[0], last_point[1], width / 2],
+                    ]
+                    faces.append(new_face)
+
+                last_point = new_point
+
+        first_point = very_first_point
+        new_face = [
+            [last_point[0], last_point[1], width / 2],
+            [last_point[0], last_point[1], -1 * width / 2],
+            [first_point[0], first_point[1], -1 * width / 2],
+        ]
+        faces.append(new_face)
+
+        new_face = [
+            [first_point[0], first_point[1], -1 * width / 2],
+            [first_point[0], first_point[1], width / 2],
+            [last_point[0], last_point[1], width / 2],
+        ]
+        faces.append(new_face)
+
+        return faces
+
+    def make_gear_faces(self, points, z_position=0, reverse=False):
         working_outer_radius = self.involute_radius
         if working_outer_radius < self.base_radius:
             working_outer_radius = self.base_radius
@@ -120,27 +196,33 @@ class Gear:
             )
             for point in points:
                 new_point = self.rotate(point, self.teeth_angle * i)
-                if last_point:
-                    faces.append(
-                        [
-                            [base_point[0], base_point[1], 0],
-                            [last_point[0], last_point[1], 0],
-                            [new_point[0], new_point[1], 0],
-                        ]
-                    )
+
+                new_face = [
+                    [base_point[0], base_point[1], z_position],
+                    [last_point[0], last_point[1], z_position],
+                    [new_point[0], new_point[1], z_position],
+                ]
+
+                if reverse:
+                    new_face.reverse()
+
+                faces.append(new_face)
 
                 last_point = new_point
 
         last_point = inner_points[-1]
         for point in inner_points:
             if last_point:
-                faces.append(
-                    [
-                        [0, 0, 0],
-                        [last_point[0], last_point[1], 0],
-                        [point[0], point[1], 0],
-                    ]
-                )
+                new_face = [
+                    [0, 0, z_position],
+                    [last_point[0], last_point[1], z_position],
+                    [point[0], point[1], z_position],
+                ]
+
+                if reverse:
+                    new_face.reverse()
+
+                faces.append(new_face)
 
             last_point = point
 

@@ -10,9 +10,9 @@ from gears.helpers.stl_editor import STLEditor
 @permission_classes((AllowAny,))
 def CreateGear(request):
     gear = Gear(teeth=10, module=1)
-    faces = gear.make_gear_faces()
+
     editor = STLEditor()
-    stl_text = editor.output_face_list(face_list=faces)
+    stl_text = editor.output_face_list(face_list=gear.build())
 
     filename = "text_object.stl"
     response = HttpResponse(stl_text, content_type="text/plain")
