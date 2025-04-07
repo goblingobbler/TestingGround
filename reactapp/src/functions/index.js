@@ -12,3 +12,7 @@ export { default as UserValidator } from './user_validator.js';
 
 export { default as set_global_state } from './global_state.js';
 export { default as is_valid_react_child } from './is_valid_react_child.js';
+
+export { default as create_controlled_camera } from './threejs/camera.js';
+export { default as add_lights_to_scene } from './threejs/lights.js';
+export { default as add_plane_to_scene } from './threejs/plane.js';

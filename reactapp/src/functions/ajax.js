@@ -46,7 +46,7 @@ function ajax_wrapper(type, url, data, returnFunc) {
         statusCode: {
             200(value) {
                 console.log('return!');
-                console.log(value);
+                //console.log(value);
                 if (typeof value === 'object' && 'redirect' in value) {
                     window.location = `${value.redirect}?redirect=${window.secret_react_state.BASE_URL}`;
                 }

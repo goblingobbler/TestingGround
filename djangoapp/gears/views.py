@@ -6,10 +6,14 @@ from gears.helpers.gears import Gear
 from gears.helpers.stl_editor import STLEditor
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 @permission_classes((AllowAny,))
 def CreateGear(request):
-    gear = Gear(teeth=10, module=1)
+    json_data = request.data
+
+    print(json_data)
+
+    gear = Gear(teeth=json_data.get("teeth", 10), module=json_data.get("module", 1))
 
     editor = STLEditor()
     stl_text = editor.output_face_list(face_list=gear.build())
