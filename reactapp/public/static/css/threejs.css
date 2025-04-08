@@ -1,0 +1,9 @@
+.threejs {
+    position: relative;
+}
+
+.threejs-controls {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}

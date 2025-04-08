@@ -9,18 +9,20 @@ import {
     add_lights_to_scene,
     add_plane_to_scene,
 } from 'functions';
+import { Button } from 'library';
 
 export default class OBJViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
             loaded: false,
-            first_part_loaded: false,
 
             renderer: null,
             scene: null,
             camera: null,
             gear: null,
+
+            wireframe: false,
         };
 
         this.scene = React.createRef();
@@ -40,12 +42,14 @@ export default class OBJViewer extends Component {
 
     create_scene = () => {
         if (this.scene.current && this.state.renderer == null) {
-            if (this.scene.current.childElementCount > 0) {
+            if (this.scene.current.querySelectorAll('canvas').length > 0) {
                 return null;
             }
 
+            let parent_postition = this.scene.current.getBoundingClientRect();
+
             let width = this.scene.current.offsetWidth;
-            let height = window.innerHeight;
+            let height = window.innerHeight - parent_postition.top;
 
             // === THREE.JS CODE START ===
             let scene = new THREE.Scene();
@@ -83,6 +87,80 @@ export default class OBJViewer extends Component {
         }
     };
 
+    load_part = () => {
+        if (this.state.part) {
+            this.state.scene.remove(this.state.part);
+        }
+
+        if (!this.state.loaded || this.props.part_text == '') {
+            return null;
+        }
+
+        let loader = new STLLoader();
+        let geometry = loader.parse(this.props.part_text);
+
+        let part = null;
+        if (this.state.wireframe) {
+            let wireframe = new THREE.WireframeGeometry(geometry);
+            part = new THREE.LineSegments(wireframe);
+        } else {
+            let material = new THREE.MeshStandardMaterial({
+                roughness: 0.4,
+                color: new THREE.Color(0xffffff),
+            });
+            part = new THREE.Mesh(geometry, material);
+        }
+
+        geometry.computeVertexNormals();
+        part.castShadow = true;
+
+        console.log('Camera Position', this.state.camera.position);
+
+        this.setState(
+            {
+                part: part,
+            },
+            function () {
+                this.position_mesh(this.state.part, true);
+                this.state.scene.add(this.state.part);
+            }.bind(this),
+        );
+    };
+
+    position_mesh = (mesh, focus_camera) => {
+        let box_center = new THREE.Vector3();
+        let box_size = new THREE.Vector3();
+
+        const box3 = new THREE.Box3().setFromObject(mesh);
+        box3.getCenter(box_center);
+        box3.getSize(box_size);
+        console.log('Mesh Center', box_center, 'Mesh Size', box_size);
+
+        mesh.position.set(
+            -box_center.x,
+            -box_center.y + box_size.y / 2 + 5,
+            -box_center.z,
+        );
+
+        if (focus_camera === true) {
+            this.state.controls.target.set(
+                0,
+                -box_center.y + box_size.y / 2 + 5,
+                0,
+            );
+
+            this.state.camera.position.set(
+                (-1 * box_size.x) / 2,
+                box_size.y / 1.5 + 5,
+                box_size.x,
+            );
+        }
+    };
+
+    toggle_wireframe = () => {
+        this.setState({ wireframe: !this.state.wireframe }, this.load_part);
+    };
+
     animate = () => {
         requestAnimationFrame(this.animate);
         this.state.controls.update();
@@ -94,64 +172,15 @@ export default class OBJViewer extends Component {
         this.state.renderer.render(this.state.scene, this.state.camera);
     };
 
-    load_part = () => {
-        if (!this.state.loaded || this.props.part_text == '') {
-            return null;
-        }
-
-        if (this.state.part) {
-            this.state.scene.remove(this.state.part);
-        }
-
-        let loader = new STLLoader();
-        let geometry = loader.parse(this.props.part_text);
-
-        const material = new THREE.MeshStandardMaterial({
-            roughness: 0.2,
-            color: new THREE.Color(0xffffff),
-        });
-
-        let box_center = new THREE.Vector3();
-        let box_size = new THREE.Vector3();
-
-        let gear = new THREE.Mesh(geometry, material);
-        geometry.computeVertexNormals();
-        gear.castShadow = true;
-
-        const box3 = new THREE.Box3().setFromObject(gear);
-        box3.getCenter(box_center);
-        box3.getSize(box_size);
-        console.log('Gear Center', box_center, 'Gear Size', box_size);
-
-        gear.position.set(
-            -box_center.x,
-            -box_center.y + box_size.y / 2 + 5,
-            -box_center.z,
-        );
-
-        this.state.scene.add(gear);
-
-        this.state.controls.target.set(
-            0,
-            -box_center.y + box_size.y / 2 + 5,
-            0,
-        );
-
-        this.state.camera.position.set(
-            (-1 * box_size.x) / 2,
-            box_size.y / 1.5 + 5,
-            box_size.x,
-        );
-
-        console.log('Camera Position', this.state.camera.position);
-
-        this.setState({
-            part: gear,
-            first_part_loaded: true,
-        });
-    };
-
     render() {
-        return <div ref={this.scene}></div>;
+        return (
+            <div ref={this.scene} className="threejs">
+                <div className="threejs-controls">
+                    <Button type="primary" onClick={this.toggle_wireframe}>
+                        Wireframe
+                    </Button>
+                </div>
+            </div>
+        );
     }
 }

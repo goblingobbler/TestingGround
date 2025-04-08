@@ -1,10 +1,14 @@
 
 
+
 .header, .slide, .slide-container{
 	width: 100%;
 }
+
 .header {
 	position: fixed;
+    top:0px;
+    left: 0px;
 	border-bottom: thin solid rgba(0,0,0,.2);
 	box-shadow: 2px 0px 10px rgba(0,0,0,.2);
 	background: white;
@@ -16,6 +20,26 @@
 	width:1000px;
 	margin: 0px auto;
 }
+
+.logo {
+	font-size: 2.5em;
+	font-weight: bold;
+	display: inline-block;
+    line-height: normal;
+}
+
+.header .links {
+	float:right;
+}
+
+.header .links .link {
+	display: inline-block;
+	font-size: 1.2em;
+	padding:10px;
+	border-right: thin solid rgba(0,0,0,.4);
+}
+
+
 .slide {
 	position: relative;
 	top:25px;
@@ -26,21 +50,6 @@
 	opacity: 1;
 }
 
-.logo {
-	font-size: 2.5em;
-	font-weight: bold;
-	display: inline-block;
-    line-height: normal;
-}
-.header .links {
-	float:right;
-}
-.header .links .link {
-	display: inline-block;
-	font-size: 1.2em;
-	padding:10px;
-	border-right: thin solid rgba(0,0,0,.4);
-}
 
 .link:hover {
 	cursor: pointer;
@@ -59,7 +68,6 @@
 /* ##########  WELCOME SLIDE ########## */
 
 .welcome, .welcome .title {
-	padding-top: 50px;
 	background: #34495e;
 	color: white;
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
+import { HEADER_HEIGHT } from 'constants';
 
 class Banner extends Component {
     constructor(props) {
@@ -23,7 +24,10 @@ class Banner extends Component {
 
     render() {
         return (
-            <div className="welcome slide transitions">
+            <div
+                className="welcome slide transitions"
+                style={{ paddingTop: `${HEADER_HEIGHT}px` }}
+            >
                 <div className="inner">
                     <div className="title-container">
                         <div className="title">David Miller</div>
