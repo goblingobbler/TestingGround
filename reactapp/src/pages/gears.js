@@ -25,7 +25,7 @@ export default class Gears extends Component {
     get_gear = () => {
         ajax_wrapper(
             'POST',
-            '/api/gears/create/',
+            '/api/objects/create_gear/',
             {
                 teeth: this.state.teeth,
                 module: this.state.module,
