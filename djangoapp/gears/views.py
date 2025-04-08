@@ -13,7 +13,10 @@ def CreateGear(request):
 
     print(json_data)
 
-    gear = Gear(teeth=json_data.get("teeth", 10), module=json_data.get("module", 1))
+    gear = Gear(
+        teeth=int(json_data.get("teeth", 10)),
+        module=float(json_data.get("module", 1)),
+    )
 
     editor = STLEditor()
     stl_text = editor.output_face_list(face_list=gear.build())

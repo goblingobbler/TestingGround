@@ -32,6 +32,19 @@ export default class Gears extends Component {
         );
     };
 
+    submit = (state, callback) => {
+        console.log(state);
+        this.setState(
+            {
+                teeth: state['teeth'],
+                module: state['module'],
+            },
+            this.get_gear,
+        );
+
+        callback();
+    };
+
     render() {
         return (
             <div style={{ overflow: 'hidden' }}>
@@ -40,7 +53,10 @@ export default class Gears extends Component {
                     <div className="col-3">
                         <div className="simple-card-container">
                             <div className="simple-card">
-                                <Form submit={this.submit}>
+                                <Form
+                                    submit={this.submit}
+                                    defaults={this.state}
+                                >
                                     <TextInput
                                         type="number"
                                         name="teeth"
