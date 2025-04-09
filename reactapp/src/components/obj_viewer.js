@@ -57,6 +57,7 @@ export default class OBJViewer extends Component {
 
             let renderer = new THREE.WebGLRenderer();
             renderer.setSize(width, height);
+            renderer.antialias = true;
             renderer.shadowMap.enabled = true;
             this.scene.current.appendChild(renderer.domElement);
 
@@ -128,8 +129,15 @@ export default class OBJViewer extends Component {
     };
 
     position_mesh = (mesh, focus_camera) => {
+        let offset = this.props.vertical_offset
+            ? this.props.vertical_offset
+            : 0;
+        let rotation = this.props.rotation ? this.props.rotation : 0;
+
         let box_center = new THREE.Vector3();
         let box_size = new THREE.Vector3();
+
+        mesh.rotation.set(rotation, 0, 0);
 
         const box3 = new THREE.Box3().setFromObject(mesh);
         box3.getCenter(box_center);
@@ -138,21 +146,17 @@ export default class OBJViewer extends Component {
 
         mesh.position.set(
             -box_center.x,
-            -box_center.y + box_size.y / 2 + 5,
+            -box_center.y + box_size.y / 2 + offset,
             -box_center.z,
         );
 
         if (focus_camera === true) {
-            this.state.controls.target.set(
-                0,
-                -box_center.y + box_size.y / 2 + 5,
-                0,
-            );
+            this.state.controls.target.set(0, box_size.y / 2 + offset, 0);
 
             this.state.camera.position.set(
                 (-1 * box_size.x) / 2,
                 box_size.y / 1.5 + 5,
-                box_size.x,
+                Math.max(...box_size.toArray()),
             );
         }
     };

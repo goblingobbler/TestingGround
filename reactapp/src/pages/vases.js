@@ -5,7 +5,7 @@ import { Button, Form, TextInput } from 'library';
 import { Header, OBJViewer } from 'components';
 import { ajax_wrapper } from 'functions';
 
-export default class Gears extends Component {
+export default class Vases extends Component {
     constructor(props) {
         super(props);
 
@@ -19,19 +19,16 @@ export default class Gears extends Component {
     }
 
     componentDidMount() {
-        this.get_gear();
+        this.get_vase();
     }
 
-    get_gear = () => {
+    get_vase = () => {
         ajax_wrapper(
             'POST',
-            '/api/objects/create_gear/',
-            {
-                teeth: this.state.teeth,
-                module: this.state.module,
-            },
+            '/api/objects/create_vase/',
+            {},
             function (value) {
-                let file = new File([value], 'gear.stl');
+                let file = new File([value], 'vase.stl');
                 this.setState({ part_text: value, file: file });
             }.bind(this),
         );
@@ -41,12 +38,10 @@ export default class Gears extends Component {
         console.log(state);
         this.setState(
             {
-                teeth: state['teeth'],
-                module: state['module'],
                 part_text: '',
             },
             function () {
-                this.get_gear();
+                this.get_vase();
                 callback();
             },
         );
@@ -65,18 +60,6 @@ export default class Gears extends Component {
                                     defaults={this.state}
                                     submit_text="Update"
                                 >
-                                    <TextInput
-                                        type="number"
-                                        name="teeth"
-                                        label="Teeth"
-                                        required={true}
-                                    />
-                                    <TextInput
-                                        type="number"
-                                        name="module"
-                                        label="Module"
-                                        required={true}
-                                    />
                                     <br />
                                 </Form>
                             </div>
@@ -98,7 +81,7 @@ export default class Gears extends Component {
                     <div className="col-9" style={{ padding: '0px' }}>
                         <OBJViewer
                             part_text={this.state.part_text}
-                            vertical_offset={5}
+                            rotation={Math.PI / 2}
                         />
                     </div>
                 </div>

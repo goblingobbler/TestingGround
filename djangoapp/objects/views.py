@@ -2,7 +2,8 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 
-from djangoapp.objects.helpers.gear import Gear
+from objects.helpers.gear import Gear
+from objects.helpers.vase import Vase
 from objects.helpers.stl_editor import STLEditor
 
 
@@ -35,13 +36,9 @@ def CreateVase(request):
 
     print(json_data)
 
-    gear = Vase(
-        teeth=int(json_data.get("teeth", 10)),
-        module=float(json_data.get("module", 1)),
-    )
-
+    vase = Vase()
     editor = STLEditor()
-    stl_text = editor.output_face_list(face_list=gear.build())
+    stl_text = editor.output_face_list(face_list=vase.simple_helix_vase())
 
     filename = "text_object.stl"
     response = HttpResponse(stl_text, content_type="text/plain")

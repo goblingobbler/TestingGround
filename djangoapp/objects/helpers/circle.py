@@ -1,7 +1,10 @@
 import math
 
-class Circle():
-    def __init__(self, center, radius, point_count=24, starting_angle=0, eccentricity=0):
+
+class Circle:
+    def __init__(
+        self, center, radius, point_count=24, starting_angle=0, eccentricity=0
+    ):
         self.center = center
         self.radius = radius
         self.point_count = point_count
@@ -10,15 +13,16 @@ class Circle():
 
         self.points = self.create_points()
 
-
     def create_points(self):
         points = []
 
         angle_step = (2 * math.pi) / self.point_count
         angle = self.starting_angle
-        
+
         count = 0
-        while angle < 2 * math.pi + self.starting_angle and len(points) < self.point_count:
+        while (
+            angle < 2 * math.pi + self.starting_angle and len(points) < self.point_count
+        ):
             if count % 2 == 0:
                 radius = self.radius + self.eccentricity
             else:
@@ -34,6 +38,6 @@ class Circle():
             angle += angle_step
             count += 1
 
-        print('Circle points created', len(points))
+        print("Circle points created", len(points))
 
         return points

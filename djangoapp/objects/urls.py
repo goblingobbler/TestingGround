@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from objects.views import CreateGear
+from objects.views import CreateGear, CreateVase
 
 
 urlpatterns = [

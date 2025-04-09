@@ -15,7 +15,7 @@ urlpatterns = [
     # Base API
     path("api/", include("basics.urls")),
     # Gear API
-    path("api/objects/", include("gears.urls")),
+    path("api/objects/", include("objects.urls")),
     # Random Projects
     path("checkers", checkers, name="checkers"),
     path("circles", circles, name="circles"),
