@@ -13,6 +13,7 @@ export default class Vases extends Component {
             teeth: 10,
             module: 1,
 
+            type: 'helix',
             part_text: '',
             file: null,
         };
@@ -26,7 +27,7 @@ export default class Vases extends Component {
         ajax_wrapper(
             'POST',
             '/api/objects/create_vase/',
-            {},
+            { type: this.state.type },
             function (value) {
                 let file = new File([value], 'vase.stl');
                 this.setState({ part_text: value, file: file });
@@ -55,6 +56,54 @@ export default class Vases extends Component {
                     <div className="col-3" style={{ padding: '0px' }}>
                         <div className="simple-card-container">
                             <div className="simple-card">
+                                <h3>Vase Generator</h3>
+                            </div>
+                            <div className="simple-card">
+                                <Button
+                                    type={'primary'}
+                                    style={{
+                                        display: 'block',
+                                        marginBottom: '5px',
+                                    }}
+                                    onClick={() =>
+                                        this.setState(
+                                            { type: 'helix', part_text: '' },
+                                            this.get_vase,
+                                        )
+                                    }
+                                >
+                                    Load Helix Vase
+                                </Button>
+                                <Button
+                                    type={'primary'}
+                                    style={{
+                                        display: 'block',
+                                        marginBottom: '5px',
+                                    }}
+                                    onClick={() =>
+                                        this.setState(
+                                            { type: 'bulb', part_text: '' },
+                                            this.get_vase,
+                                        )
+                                    }
+                                >
+                                    Load Bulb Vase
+                                </Button>
+                                <Button
+                                    type={'primary'}
+                                    style={{
+                                        display: 'block',
+                                        marginBottom: '5px',
+                                    }}
+                                    onClick={() =>
+                                        this.setState(
+                                            { type: 'braided', part_text: '' },
+                                            this.get_vase,
+                                        )
+                                    }
+                                >
+                                    Load Braided Vase
+                                </Button>
                                 <Form
                                     submit={this.submit}
                                     defaults={this.state}

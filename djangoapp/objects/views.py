@@ -38,7 +38,13 @@ def CreateVase(request):
 
     vase = Vase()
     editor = STLEditor()
-    stl_text = editor.output_face_list(face_list=vase.simple_helix_vase())
+
+    if json_data["type"] == "helix":
+        stl_text = editor.output_face_list(face_list=vase.simple_helix_vase())
+    elif json_data["type"] == "bulb":
+        stl_text = editor.output_face_list(face_list=vase.simple_bulb_vase())
+    elif json_data["type"] == "braided":
+        stl_text = editor.output_face_list(face_list=vase.simple_braided_vase())
 
     filename = "text_object.stl"
     response = HttpResponse(stl_text, content_type="text/plain")

@@ -60,6 +60,9 @@ export default class Gears extends Component {
                     <div className="col-3" style={{ padding: '0px' }}>
                         <div className="simple-card-container">
                             <div className="simple-card">
+                                <h3>Gear Generator</h3>
+                            </div>
+                            <div className="simple-card">
                                 <Form
                                     submit={this.submit}
                                     defaults={this.state}
