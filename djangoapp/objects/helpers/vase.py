@@ -11,21 +11,21 @@ class Vase:
         all_faces = []
 
         # Base
-        helix = Helix(radius=0, step=0.4, height=20)
+        helix = Helix(radial_distance=0, step=0.4, height=20)
         helix.create_circles(
             circle_radius=4.5,
             point_count=8,
             ossilation=1.5,
             ossilation_steps=48,
             ossilation_start=math.pi / 2,
-            rotation_steps=48,
+            total_radians=2 * math.pi,
         )
         helix.create_faces()
         all_faces.extend(helix.faces)
 
         # Forward
         helix = Helix(
-            radius=4.2,
+            radial_distance=4.2,
             point_count=96,
             step=0.4,
             height=20,
@@ -36,7 +36,7 @@ class Vase:
         )
         helix.create_faces()
         all_faces.extend(helix.faces)
-
+        """
         helix = Helix(
             radius=4.2,
             point_count=96,
@@ -66,7 +66,6 @@ class Vase:
         )
         helix.create_faces()
         all_faces.extend(helix.faces)
-
         helix = Helix(
             radius=4.2,
             point_count=96,
@@ -82,6 +81,8 @@ class Vase:
         helix.create_faces()
         all_faces.extend(helix.faces)
 
+
+        """
         return all_faces
 
     def simple_braided_vase(self):

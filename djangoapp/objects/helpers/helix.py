@@ -6,9 +6,9 @@ from objects.helpers.circle import Circle
 class Helix:
     def __init__(
         self,
-        radius,
+        radial_distance,
+        polar_angle=0,
         point_count=24,
-        angle_start=0,
         step=0.2,
         height=10,
         reverse=False,
@@ -16,11 +16,13 @@ class Helix:
         ossilation_steps=48,
         ossilation_start=math.pi / 2,
     ):
-        self.radius = radius
+        self.radial_distance = radial_distance
+        self.polar_angle = polar_angle
+
         self.point_count = point_count
-        self.angle_start = angle_start
         self.step = step
         self.height = height
+        self.total_steps = height / step
 
         self.reverse = reverse
 
@@ -35,7 +37,7 @@ class Helix:
         ossilation=0,
         ossilation_steps=24,
         ossilation_start=0,
-        rotation_steps=0,
+        total_radians=0,
         rotation_reverse=False,
         eccentricity=0,
         angle_range=None,
@@ -48,10 +50,10 @@ class Helix:
             angle_step = (2 * math.pi) / self.point_count
         ossilation_step = (2 * math.pi) / ossilation_steps
         rotation = 0
-        if rotation_steps:
-            rotation = (2 * math.pi) / rotation_steps
+        if total_radians:
+            rotation = total_radians / self.total_steps
 
-        angle = self.angle_start
+        angle = self.polar_angle
         total_angle = angle
         if angle_range:
             multiplier = math.sin(total_angle)
@@ -73,7 +75,10 @@ class Helix:
 
         while elevation <= self.height:
 
-            radius = self.radius + math.sin(helix_ossilation_angle) * self.ossilation
+            radius = (
+                self.radial_distance
+                + math.sin(helix_ossilation_angle) * self.ossilation
+            )
 
             x = radius * math.sin(angle)
             y = radius * math.cos(angle)
