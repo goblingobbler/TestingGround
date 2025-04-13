@@ -8,9 +8,9 @@ class Helix:
         self,
         radial_distance,
         polar_angle=0,
-        point_count=24,
-        step=0.2,
-        height=10,
+        steps=50,
+        height=20,
+        rotation_about_center=0,
         reverse=False,
         ossilation=0,
         ossilation_steps=48,
@@ -19,10 +19,11 @@ class Helix:
         self.radial_distance = radial_distance
         self.polar_angle = polar_angle
 
-        self.point_count = point_count
-        self.step = step
+        self.steps = steps
+        self.step = height / steps
         self.height = height
-        self.total_steps = height / step
+
+        self.rotation_about_center = rotation_about_center
 
         self.reverse = reverse
 
@@ -33,11 +34,11 @@ class Helix:
     def create_circles(
         self,
         circle_radius,
-        point_count=24,
+        circle_points=24,
         ossilation=0,
         ossilation_steps=24,
         ossilation_start=0,
-        total_radians=0,
+        rotation_about_self=0,
         rotation_reverse=False,
         eccentricity=0,
         angle_range=None,
@@ -46,12 +47,13 @@ class Helix:
         circles = []
 
         angle_step = 0
-        if self.point_count != 0:
-            angle_step = (2 * math.pi) / self.point_count
+        if self.rotation_about_center != 0:
+            angle_step = self.rotation_about_center / self.steps
+
         ossilation_step = (2 * math.pi) / ossilation_steps
         rotation = 0
-        if total_radians:
-            rotation = total_radians / self.total_steps
+        if rotation_about_self:
+            rotation = rotation_about_self / self.steps
 
         angle = self.polar_angle
         total_angle = angle
@@ -88,7 +90,7 @@ class Helix:
             new_circle = Circle(
                 center,
                 radius=radius,
-                point_count=point_count,
+                point_count=circle_points,
                 starting_angle=circle_starting_angle,
                 eccentricity=eccentricity,
             )
