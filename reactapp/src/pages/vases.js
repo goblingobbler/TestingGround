@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { HEADER_HEIGHT } from 'constants';
 
-import { Button, Form, TextInput } from 'library';
-import { Header, OBJViewer } from 'components';
+import { Button, Form } from 'library';
+import { Header, OBJViewer, HelixForm } from 'components';
 import { ajax_wrapper } from 'functions';
 
 export default class Vases extends Component {
@@ -16,6 +16,8 @@ export default class Vases extends Component {
             type: 'helix',
             part_text: '',
             file: null,
+
+            helix_list: [{}],
         };
     }
 
@@ -48,7 +50,28 @@ export default class Vases extends Component {
         );
     };
 
+    update = (name, state) => {
+        let index = parseInt(name);
+
+        let new_helix = Object.assign(this.state.helix_list[index], state);
+        this.state.helix_list[index] = new_helix;
+
+        this.setState({
+            helix_list: this.state.helix_list,
+        });
+    };
+
     render() {
+        let helix_forms = [];
+        for (let item of this.state.helix_list) {
+            let index = this.state.helix_list.indexOf(item);
+            helix_forms.push(
+                <div className="simple-card">
+                    <HelixForm index={index} data={item} update={this.update} />
+                </div>,
+            );
+        }
+
         return (
             <div style={{ overflow: 'hidden', marginTop: HEADER_HEIGHT }}>
                 <Header />
@@ -104,14 +127,10 @@ export default class Vases extends Component {
                                 >
                                     Load Braided Vase
                                 </Button>
-                                <Form
-                                    submit={this.submit}
-                                    defaults={this.state}
-                                    submit_text="Update"
-                                >
-                                    <br />
-                                </Form>
                             </div>
+                            
+                            {helix_forms}
+
                             <div className="simple-card">
                                 {this.state.file ? (
                                     <a

@@ -15,10 +15,10 @@ class Vase:
         helix.create_circles(
             circle_radius=4.5,
             circle_points=8,
+            rotation_about_self=2 * math.pi,
             ossilation=1.5,
             ossilation_steps=48,
             ossilation_start=math.pi / 2,
-            rotation_about_self=2 * math.pi,
         )
         helix.create_faces()
         all_faces.extend(helix.faces)

@@ -24,7 +24,6 @@ class Helix:
         self.height = height
 
         self.rotation_about_center = rotation_about_center
-
         self.reverse = reverse
 
         self.ossilation = ossilation

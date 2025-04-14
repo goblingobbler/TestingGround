@@ -55,3 +55,8 @@ img {
 .simple-card-header {
     margin: -10px -20px 0px;
 }
+
+.page-break {
+    margin: 20px 10px;
+    border-top: thin solid #ddd;
+}

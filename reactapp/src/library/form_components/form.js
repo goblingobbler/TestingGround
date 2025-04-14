@@ -166,9 +166,7 @@ class Form extends Component {
             this.props.auto_set_global_state === 'true'
         ) {
             if (this.props.set_global_state) {
-                const copied_state = { ...state };
-                delete copied_state.form_child_update_key;
-                delete copied_state.required;
+                let copied_state = this.get_clean_state(state);
 
                 this.props.set_global_state(
                     this.props.global_state_name,
@@ -198,6 +196,8 @@ class Form extends Component {
     }
 
     set_form_state(state) {
+        const data = this.get_clean_state(this.state);
+
         let newState;
         if (this.props.full_state) {
             newState = this.state;
@@ -225,9 +225,7 @@ class Form extends Component {
     }
 
     form_submit() {
-        const data = { ...this.state };
-        delete data.children;
-        delete data.form_state;
+        const data = this.get_clean_state(this.state);
 
         const new_state = {
             required: [],
@@ -290,6 +288,18 @@ class Form extends Component {
         }
         this.setState({ form_is_saving_right_now: false });
     }
+
+    get_clean_state = (state) => {
+        let copied_state = { ...state };
+        delete copied_state.children;
+        delete copied_state.defaults;
+        delete copied_state.required;
+        delete copied_state.form_state;
+        delete copied_state.form_is_saving_right_now;
+        delete copied_state.form_child_update_key;
+
+        return copied_state;
+    };
 
     reload() {
         this.window.location.reload();

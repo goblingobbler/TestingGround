@@ -13,3 +13,4 @@ export { default as TextInput } from './form_components/textinput.js';
 export { default as FileInput } from './form_components/fileinput.js';
 export { default as TextArea } from './form_components/textarea.js';
 export { default as Select } from './form_components/select.js';
+export { default as Radios } from './form_components/radios.js';

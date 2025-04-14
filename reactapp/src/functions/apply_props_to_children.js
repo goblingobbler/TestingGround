@@ -22,7 +22,7 @@ function apply_props_to_children(component, parent_functions, form_state) {
             return;
         }
 
-        let data_mapping = parent_functions;
+        let data_mapping = Object.assign({}, parent_functions);
         if (form_state) {
             data_mapping = get_form_props(
                 form_state,
@@ -34,6 +34,7 @@ function apply_props_to_children(component, parent_functions, form_state) {
         }
         data_mapping.children = apply_props_to_children(
             childComponent,
+            parent_functions,
             form_state,
         );
 
