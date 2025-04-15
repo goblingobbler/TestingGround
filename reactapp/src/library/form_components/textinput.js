@@ -19,7 +19,7 @@ export default function TextInput(props) {
     }
 
     let value = props.default;
-    if (props.value) {
+    if (props.value != undefined && props.value != null) {
         value = props.value;
     }
 

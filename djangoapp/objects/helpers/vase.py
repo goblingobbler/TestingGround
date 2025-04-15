@@ -15,17 +15,18 @@ class Vase:
             helix = Helix(
                 radial_distance=data.get("radial_distance", 0),
                 polar_angle=data.get("polar_angle", 0),
-                steps=data.get("steps", 3),
-                height=data.get("height", 3),
+                steps=data.get("steps", 0),
+                height=data.get("height", 0),
                 rotation_about_center=data.get("rotation_about_center", 0),
                 reverse=data.get("reverse", False),
             )
             helix.create_circles(
-                circle_radius=data.get("circle_radius", 1),
-                circle_points=data.get("circle_points", 3),
+                circle_radius=data.get("circle_radius", 0),
+                circle_points=data.get("circle_points", 0),
                 rotation_about_self=data.get("rotation_about_self", 0),
+                rotation_reverse=data.get("rotation_reverse", False),
                 ossilation=data.get("ossilation", 0),
-                ossilation_steps=data.get("ossilation_steps", 3),
+                ossilation_steps=data.get("ossilation_steps", 0),
                 ossilation_start=data.get("ossilation_start", 0),
             )
             helix.create_faces()

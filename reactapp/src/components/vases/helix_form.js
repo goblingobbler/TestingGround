@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
-import { Form, TextInput, Select, Radios } from 'library';
+import { Form, TextInput, Select, Radios, Button } from 'library';
 
 export default class HelixForm extends Component {
     render() {
         return (
             <Form
+                uses_global_dict={true}
                 global_state_name={`${this.props.index}`}
                 auto_set_global_state={true}
                 set_global_state={this.props.update}
@@ -104,6 +105,34 @@ export default class HelixForm extends Component {
                         name="rotation_reverse"
                         label={'rotation_reverse'}
                     />
+                    <Radios
+                        className="col-6"
+                        boolean={true}
+                        name="show"
+                        label={'show'}
+                    />
+                    <div className="col-6">
+                        <Button
+                            style={{ marginTop: '22px' }}
+                            type="primary"
+                            onClick={() =>
+                                this.props.copy_helix(this.props.data)
+                            }
+                        >
+                            Create Copy
+                        </Button>
+                    </div>
+                    <div className="col-6">
+                        <Button
+                            style={{ marginTop: '22px' }}
+                            type="danger"
+                            onClick={() =>
+                                this.props.delete_helix(this.props.index)
+                            }
+                        >
+                            Delete
+                        </Button>
+                    </div>
                 </div>
             </Form>
         );

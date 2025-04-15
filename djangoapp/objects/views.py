@@ -49,14 +49,20 @@ def CreateVase(request):
     parsed_data = []
     for item in json_data["helix_list"]:
         for key in item:
+            if item[key] == "":
+                item[key] = 0
             item[key] = float(item[key])
         parsed_data.append(item)
 
     faces = vase.custom_vase(helix_data=parsed_data)
-    stl_text = editor.output_face_list(face_list=faces)
+    stl_text = ""
+    if len(faces) > 0:
+        stl_text = editor.output_face_list(face_list=faces)
 
     filename = "text_object.stl"
     response = HttpResponse(stl_text, content_type="text/plain")
     response["Content-Disposition"] = "attachment; filename={0}".format(filename)
+
+    print("CreateVase Complete")
 
     return response

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { HEADER_HEIGHT } from 'constants';
 
-import { Button, Form } from 'library';
+import { Button, Form, Accordion } from 'library';
 import { Header, OBJViewer, HelixForm } from 'components';
 import { ajax_wrapper } from 'functions';
 
 const VASE_EXAMPLES = {
     helix: [
         {
+            show: true,
             radial_distance: 0,
             polar_angle: 0,
             steps: 50,
@@ -23,6 +24,7 @@ const VASE_EXAMPLES = {
             rotation_reverse: false,
         },
         {
+            show: true,
             radial_distance: 4.2,
             polar_angle: 0,
             steps: 50,
@@ -35,6 +37,7 @@ const VASE_EXAMPLES = {
             rotation_reverse: false,
         },
         {
+            show: true,
             radial_distance: 4.2,
             polar_angle: 3.14159,
             steps: 50,
@@ -47,6 +50,7 @@ const VASE_EXAMPLES = {
             rotation_reverse: false,
         },
         {
+            show: true,
             radial_distance: 4.2,
             polar_angle: -1.57,
             steps: 50,
@@ -59,6 +63,7 @@ const VASE_EXAMPLES = {
             rotation_reverse: false,
         },
         {
+            show: true,
             radial_distance: 4.2,
             polar_angle: 1.57,
             steps: 50,
@@ -73,6 +78,7 @@ const VASE_EXAMPLES = {
     ],
     braided: [
         {
+            show: true,
             radial_distance: 0,
             polar_angle: 0,
             steps: 48,
@@ -86,6 +92,7 @@ const VASE_EXAMPLES = {
     ],
     bulb: [
         {
+            show: true,
             radial_distance: 0,
             polar_angle: 0,
             steps: 50,
@@ -104,6 +111,7 @@ const VASE_EXAMPLES = {
 
 const BRAIDED_CHILDREN = [
     {
+        show: true,
         radial_distance: 5,
         polar_angle: 0,
         steps: 48,
@@ -115,6 +123,7 @@ const BRAIDED_CHILDREN = [
         rotation_reverse: false,
     },
     {
+        show: true,
         radial_distance: 5,
         polar_angle: 0,
         steps: 48,
@@ -127,13 +136,24 @@ const BRAIDED_CHILDREN = [
     },
 ];
 
+let polar_angle = 0;
+while (polar_angle < 2 * Math.PI) {
+    for (let item of BRAIDED_CHILDREN) {
+        VASE_EXAMPLES['braided'].push(
+            Object.assign({}, item, { polar_angle: polar_angle }),
+        );
+    }
+    polar_angle += Math.PI / 4;
+}
+
 const BULB_CHILDREN = [
     {
+        show: true,
         radial_distance: 5,
         polar_angle: 0,
         steps: 48,
         height: 19.2,
-        rotation_about_center: 3.14159,
+        rotation_about_center: 0,
         reverse: false,
         circle_radius: 2,
         circle_points: 24,
@@ -143,6 +163,30 @@ const BULB_CHILDREN = [
         rotation_reverse: false,
     },
 ];
+
+polar_angle = 0;
+while (polar_angle < 2 * Math.PI) {
+    for (let item of BULB_CHILDREN) {
+        VASE_EXAMPLES['bulb'].push(
+            Object.assign({}, item, { polar_angle: polar_angle }),
+        );
+    }
+    polar_angle += Math.PI / 4;
+}
+
+const HELIX_DEFAULT = {
+    show: true,
+};
+
+function copy_helix_list(data) {
+    let new_list = [];
+
+    for (let item of data) {
+        new_list.push(Object.assign({}, item));
+    }
+
+    return new_list;
+}
 
 export default class Vases extends Component {
     constructor(props) {
@@ -156,8 +200,10 @@ export default class Vases extends Component {
             part_text: '',
             file: null,
 
-            helix_list: [{}],
+            helix_list: copy_helix_list(VASE_EXAMPLES['bulb']),
         };
+
+        this.container = React.createRef();
     }
 
     componentDidMount() {
@@ -165,10 +211,19 @@ export default class Vases extends Component {
     }
 
     get_vase = () => {
+        let final_list = [];
+        for (let item of this.state.helix_list) {
+            if (!item['show']) {
+                continue;
+            }
+
+            final_list.push(item);
+        }
+
         ajax_wrapper(
             'POST',
             '/api/objects/create_vase/',
-            { helix_list: this.state.helix_list },
+            { helix_list: final_list },
             function (value) {
                 let file = new File([value], 'vase.stl');
                 this.setState({ part_text: value, file: file });
@@ -198,107 +253,191 @@ export default class Vases extends Component {
         });
     };
 
+    copy_helix = (data) => {
+        let new_helix = Object.assign({}, data);
+        this.state.helix_list.push(new_helix);
+
+        this.setState({
+            helix_list: this.state.helix_list,
+        });
+    };
+
+    delete_helix = (index) => {
+        this.state.helix_list.splice(index, 1);
+
+        this.setState({
+            helix_list: this.state.helix_list,
+        });
+    };
+
     render() {
         let helix_forms = [];
         for (let item of this.state.helix_list) {
             let index = this.state.helix_list.indexOf(item);
             helix_forms.push(
-                <div className="simple-card">
-                    <HelixForm index={index} data={item} update={this.update} />
-                </div>,
+                <Accordion index={index} name={`Helix ${index}`}>
+                    <HelixForm
+                        index={index}
+                        data={item}
+                        update={this.update}
+                        copy_helix={this.copy_helix}
+                        delete_helix={this.delete_helix}
+                    />
+                </Accordion>,
             );
+        }
+
+        let max_height = 0;
+        if (this.container.current) {
+            let parent_postition =
+                this.container.current.getBoundingClientRect();
+            max_height = window.innerHeight - parent_postition.top;
         }
 
         return (
             <div style={{ overflow: 'hidden', marginTop: HEADER_HEIGHT }}>
                 <Header />
                 <div className="row" style={{ margin: '0px' }}>
-                    <div className="col-3" style={{ padding: '0px' }}>
+                    <div
+                        className="col-xxl-3 col-xl-4 col-md-5 col-6"
+                        ref={this.container}
+                        style={{
+                            padding: '0px',
+                            maxHeight: `${max_height}px`,
+                            overflowY: 'auto',
+                        }}
+                    >
                         <div className="simple-card-container">
                             <div className="simple-card">
                                 <h3>Vase Generator</h3>
                             </div>
                             <div className="simple-card">
-                                <Button
-                                    type={'primary'}
-                                    style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                    }}
-                                    onClick={() =>
-                                        this.setState(
-                                            {
+                                <div style={{ paddingBottom: '10px' }}>
+                                    <h5>Examples</h5>
+
+                                    <Button
+                                        type={'primary'}
+                                        className="standoff"
+                                        onClick={() =>
+                                            this.setState(
+                                                {
+                                                    helix_list: copy_helix_list(
+                                                        VASE_EXAMPLES['bulb'],
+                                                    ),
+                                                    part_text: '',
+                                                },
+                                                this.get_vase,
+                                            )
+                                        }
+                                    >
+                                        Load Bulb Vase
+                                    </Button>
+                                    <Button
+                                        type={'primary'}
+                                        className="standoff"
+                                        onClick={() =>
+                                            this.setState(
+                                                {
+                                                    helix_list: copy_helix_list(
+                                                        VASE_EXAMPLES['helix'],
+                                                    ),
+                                                    part_text: '',
+                                                },
+                                                this.get_vase,
+                                            )
+                                        }
+                                    >
+                                        Load Helix Vase
+                                    </Button>
+                                    <Button
+                                        type={'primary'}
+                                        className="standoff"
+                                        onClick={() =>
+                                            this.setState(
+                                                {
+                                                    helix_list: copy_helix_list(
+                                                        VASE_EXAMPLES[
+                                                            'braided'
+                                                        ],
+                                                    ),
+                                                    part_text: '',
+                                                },
+                                                this.get_vase,
+                                            )
+                                        }
+                                    >
+                                        Load Braided Vase
+                                    </Button>
+                                </div>
+                                <div>
+                                    <h5>Actions</h5>
+                                    <Button
+                                        type={'success'}
+                                        className="standoff"
+                                        onClick={function () {
+                                            this.state.helix_list.push(
+                                                Object.assign(
+                                                    {},
+                                                    HELIX_DEFAULT,
+                                                ),
+                                            );
+                                            this.setState({
                                                 helix_list:
-                                                    VASE_EXAMPLES['helix'],
-                                                part_text: '',
-                                            },
-                                            this.get_vase,
-                                        )
-                                    }
-                                >
-                                    Load Helix Vase
-                                </Button>
-                                <Button
-                                    type={'primary'}
-                                    style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                    }}
-                                    onClick={() =>
-                                        this.setState(
-                                            {
+                                                    this.state.helix_list,
+                                            });
+                                        }.bind(this)}
+                                    >
+                                        Add Helix
+                                    </Button>
+                                    <Button
+                                        type={'warning'}
+                                        className="standoff"
+                                        onClick={function () {
+                                            this.state.helix_list = [
+                                                Object.assign(
+                                                    {},
+                                                    HELIX_DEFAULT,
+                                                ),
+                                            ];
+                                            this.setState({
                                                 helix_list:
-                                                    VASE_EXAMPLES['bulb'],
-                                                part_text: '',
-                                            },
-                                            this.get_vase,
-                                        )
-                                    }
-                                >
-                                    Load Bulb Vase
-                                </Button>
-                                <Button
-                                    type={'primary'}
-                                    style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                    }}
-                                    onClick={() =>
-                                        this.setState(
-                                            {
-                                                helix_list:
-                                                    VASE_EXAMPLES['braided'],
-                                                part_text: '',
-                                            },
-                                            this.get_vase,
-                                        )
-                                    }
-                                >
-                                    Load Braided Vase
-                                </Button>
+                                                    this.state.helix_list,
+                                            });
+                                        }.bind(this)}
+                                    >
+                                        Restart
+                                    </Button>
+                                </div>
                             </div>
 
-                            {helix_forms}
+                            <div className="simple-card">{helix_forms}</div>
 
                             <div className="simple-card">
-                                <Button type="primary" onClick={this.submit}>
-                                    Update
+                                <Button
+                                    className="standoff"
+                                    type="primary"
+                                    onClick={this.submit}
+                                >
+                                    Update Model
                                 </Button>
                                 {this.state.file ? (
                                     <a
-                                        className={'btn btn-success'}
+                                        className={'btn btn-success standoff'}
                                         href={URL.createObjectURL(
                                             this.state.file,
                                         )}
                                         download={this.state.file.name}
                                     >
-                                        Download
+                                        Download STL
                                     </a>
                                 ) : null}
                             </div>
                         </div>
                     </div>
-                    <div className="col-9" style={{ padding: '0px' }}>
+                    <div
+                        className="col-xxl-9 col-xl-8 col-md-7 col-6"
+                        style={{ padding: '0px' }}
+                    >
                         <OBJViewer
                             part_text={this.state.part_text}
                             rotation={Math.PI / 2}

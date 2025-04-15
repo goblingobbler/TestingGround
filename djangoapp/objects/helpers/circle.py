@@ -16,7 +16,10 @@ class Circle:
     def create_points(self):
         points = []
 
-        angle_step = (2 * math.pi) / self.point_count
+        angle_step = 0
+        if self.point_count:
+            angle_step = (2 * math.pi) / self.point_count
+
         angle = self.starting_angle
 
         count = 0
@@ -38,6 +41,6 @@ class Circle:
             angle += angle_step
             count += 1
 
-        print("Circle points created", len(points))
+        # print("Circle points created", len(points))
 
         return points

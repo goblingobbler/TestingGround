@@ -20,7 +20,10 @@ class Helix:
         self.polar_angle = polar_angle
 
         self.steps = steps
-        self.step = height / steps
+        self.step = 0
+        if steps:
+            self.step = height / steps
+
         self.height = height
 
         self.rotation_about_center = rotation_about_center
@@ -43,13 +46,17 @@ class Helix:
         angle_range=None,
     ):
 
+        print("Making circles")
         circles = []
 
         angle_step = 0
         if self.rotation_about_center != 0:
             angle_step = self.rotation_about_center / self.steps
 
-        ossilation_step = (2 * math.pi) / ossilation_steps
+        ossilation_step = 0
+        if ossilation_steps:
+            ossilation_step = (2 * math.pi) / ossilation_steps
+
         rotation = 0
         if rotation_about_self:
             rotation = rotation_about_self / self.steps
@@ -66,7 +73,10 @@ class Helix:
         ossilation_angle = ossilation_start
         helix_ossilation_angle = self.ossilation_start
         circle_starting_angle = 0
+
         elevation = 0
+        if not self.step:
+            elevation = self.height + 1
 
         if self.reverse:
             angle_step = -1 * angle_step
@@ -75,7 +85,6 @@ class Helix:
             rotation = -1 * rotation
 
         while elevation <= self.height:
-
             radius = (
                 self.radial_distance
                 + math.sin(helix_ossilation_angle) * self.ossilation
@@ -145,25 +154,26 @@ class Helix:
 
             count += 1
 
-        first_circle = self.circles[0]
-        for point in range(2, len(first_circle.points)):
-            faces.append(
-                [
-                    first_circle.points[point - 1],
-                    first_circle.points[point],
-                    first_circle.points[0],
-                ]
-            )
+        if len(self.circles) > 0:
+            first_circle = self.circles[0]
+            for point in range(2, len(first_circle.points)):
+                faces.append(
+                    [
+                        first_circle.points[point - 1],
+                        first_circle.points[point],
+                        first_circle.points[0],
+                    ]
+                )
 
-        last_circle = self.circles[len(self.circles) - 1]
-        for point in range(2, len(last_circle.points)):
-            faces.append(
-                [
-                    last_circle.points[point - 1],
-                    last_circle.points[point],
-                    last_circle.points[0],
-                ]
-            )
+            last_circle = self.circles[len(self.circles) - 1]
+            for point in range(2, len(last_circle.points)):
+                faces.append(
+                    [
+                        last_circle.points[point - 1],
+                        last_circle.points[point],
+                        last_circle.points[0],
+                    ]
+                )
 
         self.faces = faces
         print("Faces Created", len(self.faces))
