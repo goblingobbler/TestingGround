@@ -180,9 +180,15 @@ const HELIX_DEFAULT = {
 
 function copy_helix_list(data) {
     let new_list = [];
+    let timestamp = Date.now();
 
     for (let item of data) {
-        new_list.push(Object.assign({}, item));
+        let new_item = Object.assign({}, item);
+        new_item['timestamp'] = timestamp;
+
+        new_list.push(new_item);
+
+        timestamp += 1;
     }
 
     return new_list;
@@ -277,6 +283,7 @@ export default class Vases extends Component {
             helix_forms.push(
                 <Accordion index={index} name={`Helix ${index}`}>
                     <HelixForm
+                        key={item['timestamp']}
                         index={index}
                         data={item}
                         update={this.update}
@@ -375,12 +382,16 @@ export default class Vases extends Component {
                                         type={'success'}
                                         className="standoff"
                                         onClick={function () {
-                                            this.state.helix_list.push(
-                                                Object.assign(
-                                                    {},
-                                                    HELIX_DEFAULT,
-                                                ),
+                                            let new_item = Object.assign(
+                                                {},
+                                                HELIX_DEFAULT,
                                             );
+                                            new_item['timestamp'] = Date.now();
+
+                                            this.state.helix_list.push(
+                                                new_item,
+                                            );
+
                                             this.setState({
                                                 helix_list:
                                                     this.state.helix_list,
@@ -393,12 +404,13 @@ export default class Vases extends Component {
                                         type={'warning'}
                                         className="standoff"
                                         onClick={function () {
-                                            this.state.helix_list = [
-                                                Object.assign(
-                                                    {},
-                                                    HELIX_DEFAULT,
-                                                ),
-                                            ];
+                                            let new_item = Object.assign(
+                                                {},
+                                                HELIX_DEFAULT,
+                                            );
+                                            new_item['timestamp'] = Date.now();
+
+                                            this.state.helix_list = [new_item];
                                             this.setState({
                                                 helix_list:
                                                     this.state.helix_list,
