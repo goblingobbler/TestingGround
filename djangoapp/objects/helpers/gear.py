@@ -16,6 +16,10 @@ def rad_to_deg(rad):
     return rad * (180 / math.pi)
 
 
+def euclidain(a, b):
+    return math.sqrt(math.pow(a[0] - b[0], 2) + math.pow(a[1] - b[1], 2))
+
+
 def find_circle(x1, y1, x2, y2, x3, y3):
     x12 = x1 - x2
     x13 = x1 - x3
@@ -97,81 +101,195 @@ class Gear:
 
         self.root_radius = self.radius - self.dedendum
 
-        print(self.tip_radius, self.radius, self.base_radius, self.root_radius)
+        # print(self.tip_radius, self.radius, self.base_radius, self.root_radius)
 
-    def build(self, width=2):
+    def build(
+        self,
+        width=2,
+        scale=0.9,
+    ):
 
         points = self.gear_points()
+        scaled_points = []
+        center_point = self.get_center_point(points)
 
-        faces = self.make_gear_faces(points, z_position=width / 2)
+        gear_points, chamfer_offset = self.scale_about_point(
+            points[GEAR_INSIDE_POINTS : len(points) - GEAR_INSIDE_POINTS], center_point
+        )
+        first_fillet, trash = self.scale_about_point(
+            points[0:GEAR_INSIDE_POINTS],
+            [0, 0],
+            center_point,
+            max_offset=chamfer_offset,
+        )
+        second_fillet, trash = self.scale_about_point(
+            points[len(points) - GEAR_INSIDE_POINTS :],
+            center_point,
+            [0, 0],
+            max_offset=chamfer_offset,
+        )
+
+        chamfer_offset = chamfer_offset * 2
+
+        scaled_points = first_fillet + gear_points + second_fillet
+
+        faces = self.make_gear_faces(scaled_points, z_position=width / 2)
         second_faces = self.make_gear_faces(
-            points, z_position=-1 * width / 2, reverse=True
+            scaled_points, z_position=-1 * width / 2, reverse=True
         )
         faces.extend(second_faces)
 
-        third_faces = self.bridge_faces(points, width=width)
-        faces.extend(third_faces)
+        print("chamfer_offset", chamfer_offset)
+
+        faces.extend(
+            self.bridge_faces(
+                points,
+                width / 2 - chamfer_offset,
+                points,
+                -1 * width / 2 + chamfer_offset,
+            )
+        )
+        faces.extend(
+            self.bridge_faces(
+                scaled_points, width / 2, points, width / 2 - chamfer_offset
+            )
+        )
+        faces.extend(
+            self.bridge_faces(
+                points, -1 * width / 2 + chamfer_offset, scaled_points, -1 * width / 2
+            )
+        )
 
         return faces
 
-    def bridge_faces(self, points, width=2):
+    def get_center_point(self, points):
+        center = [0, 0]
+        for point in points:
+            center[0] += point[0]
+            center[1] += point[1]
+
+        center[0] = center[0] / len(points)
+        center[1] = center[1] / len(points)
+
+        return center
+
+    def scale_about_point(self, points, center, final=None, scale=0.7, max_offset=None):
+        working_center = [center[0], center[1]]
+
+        scaled_points = []
+        avg_diff = [0, 0]
+
+        step = [0, 0]
+        if final:
+            center_diff = [
+                center[0] - final[0],
+                center[1] - final[1],
+            ]
+            step = [
+                center_diff[0] / (len(points) - 1),
+                center_diff[1] / (len(points) - 1),
+            ]
+
+        for point in points:
+            diff = [point[0] - working_center[0], point[1] - working_center[1]]
+
+            scale_amount = [
+                diff[0] * (1 - scale),
+                diff[1] * (1 - scale),
+            ]
+            distance = euclidain([0, 0], scale_amount)
+            if max_offset:
+                scale_amount[0] = scale_amount[0] * (max_offset / distance)
+                scale_amount[1] = scale_amount[1] * (max_offset / distance)
+
+            avg_diff[0] += abs(scale_amount[0])
+            avg_diff[1] += abs(scale_amount[1])
+
+            scaled_points.append(
+                [
+                    point[0] - scale_amount[0],
+                    point[1] - scale_amount[1],
+                ]
+            )
+
+            working_center[0] -= step[0]
+            working_center[1] -= step[1]
+
+        avg_diff[0] = avg_diff[0] / len(points)
+        avg_diff[1] = avg_diff[1] / len(points)
+        chamfer_offset = euclidain([0, 0], avg_diff)
+
+        return scaled_points, chamfer_offset
+
+    def bridge_faces(self, top_points, top_z, bottom_points, bottom_z):
         faces = []
-        last_point = None
+        last_top_point = None
+        last_bottom_point = None
 
         for i in range(self.teeth):
 
-            if last_point:
-                first_point = self.rotate(points[0], self.teeth_angle * i)
+            if last_top_point:
+                first_top_point = self.rotate(top_points[0], self.teeth_angle * i)
+                first_bottom_point = self.rotate(bottom_points[0], self.teeth_angle * i)
+
                 new_face = [
-                    [last_point[0], last_point[1], width / 2],
-                    [last_point[0], last_point[1], -1 * width / 2],
-                    [first_point[0], first_point[1], -1 * width / 2],
+                    [last_top_point[0], last_top_point[1], top_z],
+                    [last_bottom_point[0], last_bottom_point[1], bottom_z],
+                    [first_bottom_point[0], first_bottom_point[1], bottom_z],
                 ]
                 faces.append(new_face)
 
                 new_face = [
-                    [first_point[0], first_point[1], -1 * width / 2],
-                    [first_point[0], first_point[1], width / 2],
-                    [last_point[0], last_point[1], width / 2],
+                    [first_bottom_point[0], first_bottom_point[1], bottom_z],
+                    [first_top_point[0], first_top_point[1], top_z],
+                    [last_top_point[0], last_top_point[1], top_z],
                 ]
                 faces.append(new_face)
             else:
-                very_first_point = self.rotate(points[0], self.teeth_angle * i)
+                very_first_top_point = self.rotate(top_points[0], self.teeth_angle * i)
+                very_first_bottom_point = self.rotate(
+                    bottom_points[0], self.teeth_angle * i
+                )
 
-            last_point = None  # self.rotate(points[-1], self.teeth_angle * i)
+            last_top_point = None
+            last_bottom_point = None
 
-            for point in points:
-                new_point = self.rotate(point, self.teeth_angle * i)
+            for j in range(len(top_points)):
+                new_top_point = self.rotate(top_points[j], self.teeth_angle * i)
+                new_bottom_point = self.rotate(bottom_points[j], self.teeth_angle * i)
 
-                if last_point:
+                if last_top_point:
                     new_face = [
-                        [last_point[0], last_point[1], width / 2],
-                        [last_point[0], last_point[1], -1 * width / 2],
-                        [new_point[0], new_point[1], -1 * width / 2],
+                        [last_top_point[0], last_top_point[1], top_z],
+                        [last_bottom_point[0], last_bottom_point[1], bottom_z],
+                        [new_bottom_point[0], new_bottom_point[1], bottom_z],
                     ]
                     faces.append(new_face)
 
                     new_face = [
-                        [new_point[0], new_point[1], -1 * width / 2],
-                        [new_point[0], new_point[1], width / 2],
-                        [last_point[0], last_point[1], width / 2],
+                        [new_bottom_point[0], new_bottom_point[1], bottom_z],
+                        [new_top_point[0], new_top_point[1], top_z],
+                        [last_top_point[0], last_top_point[1], top_z],
                     ]
                     faces.append(new_face)
 
-                last_point = new_point
+                last_top_point = new_top_point
+                last_bottom_point = new_bottom_point
 
-        first_point = very_first_point
+        first_top_point = very_first_top_point
+        first_bottom_point = very_first_bottom_point
+
         new_face = [
-            [last_point[0], last_point[1], width / 2],
-            [last_point[0], last_point[1], -1 * width / 2],
-            [first_point[0], first_point[1], -1 * width / 2],
+            [last_top_point[0], last_top_point[1], top_z],
+            [last_bottom_point[0], last_bottom_point[1], bottom_z],
+            [first_bottom_point[0], first_bottom_point[1], bottom_z],
         ]
         faces.append(new_face)
 
         new_face = [
-            [first_point[0], first_point[1], -1 * width / 2],
-            [first_point[0], first_point[1], width / 2],
-            [last_point[0], last_point[1], width / 2],
+            [first_bottom_point[0], first_bottom_point[1], bottom_z],
+            [first_top_point[0], first_top_point[1], top_z],
+            [last_top_point[0], last_top_point[1], top_z],
         ]
         faces.append(new_face)
 
@@ -237,8 +355,8 @@ class Gear:
         step = diff / GEAR_SIDE_POINTS
 
         # Involute Curve Points
-        points = []
-        inverted_points = []
+        contact_points = []
+        inverted_contact_points = []
 
         reference_point = self.get_involute_point(self.radius)
         reference_angle = self.get_angle_of_circle_points(
@@ -252,22 +370,22 @@ class Gear:
             point = self.get_involute_point(radius)
 
             new_point = self.rotate(point, 0)
-            points.append(new_point)
+            contact_points.append(new_point)
 
             inverted_new_point = self.rotate(
                 [point[0], -1 * point[1]], reference_angle + self.teeth_angle / 2
             )
-            inverted_points.append(inverted_new_point)
+            inverted_contact_points.append(inverted_new_point)
 
             radius += step
 
-        inverted_points.reverse()
+        inverted_contact_points.reverse()
 
         # Fillet Curve Points
         fillet_points = []
         inverted_fillet_points = []
-        first_point = inverted_points[-1]
-        second_point = self.rotate(points[0], self.teeth_angle)
+        first_point = inverted_contact_points[-1]
+        second_point = self.rotate(contact_points[0], self.teeth_angle)
         third_point = self.rotate(
             [self.root_radius, 0], (self.teeth_angle) * (3 / 4) + reference_angle / 2
         )
@@ -288,7 +406,8 @@ class Gear:
             invert_positive=True,
             print_image=True,
         )
-        print("center", center, "radius", radius, "inside_angle", inside_angle)
+
+        # print("center", center, "radius", radius, "inside_angle", inside_angle)
 
         for i in range(GEAR_INSIDE_POINTS):
             if i == 0:
@@ -309,7 +428,7 @@ class Gear:
         tip_points = []
         inverted_tip_points = []
         outside_angle = self.get_angle_of_circle_points(
-            points[-1], inverted_points[0], [0, 0], self.tip_radius
+            contact_points[-1], inverted_contact_points[0], [0, 0], self.tip_radius
         )
         for i in range(GEAR_TIP_POINTS):
             if i == 0:
@@ -317,19 +436,22 @@ class Gear:
 
             angle = (outside_angle / 20) * i
 
-            point = self.rotate(points[-1], angle, center=[0, 0])
+            point = self.rotate(contact_points[-1], angle, center=[0, 0])
             tip_points.append(point)
 
-            point = self.rotate(inverted_points[0], -angle, center=[0, 0])
+            point = self.rotate(inverted_contact_points[0], -angle, center=[0, 0])
             inverted_tip_points.append(point)
 
         inverted_tip_points.reverse()
 
-        points.extend(tip_points)
-        points.extend(inverted_tip_points)
-        points.extend(inverted_points)
-        points.extend(fillet_points)
-        points = inverted_fillet_points + points
+        points = (
+            inverted_fillet_points
+            + contact_points
+            + tip_points
+            + inverted_tip_points
+            + inverted_contact_points
+            + fillet_points
+        )
 
         print("Total Points", len(points))
         final_points = []
