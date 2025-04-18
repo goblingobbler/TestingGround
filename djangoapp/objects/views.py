@@ -17,6 +17,9 @@ def CreateGear(request):
     gear = Gear(
         teeth=int(json_data.get("teeth", 10)),
         module=float(json_data.get("module", 1)),
+        width=float(json_data.get("width", 2)),
+        xy_inset=float(json_data.get("xy_inset", 0)),
+        z_inset=float(json_data.get("z_inset", 0)),
     )
 
     editor = STLEditor()
@@ -38,14 +41,7 @@ def CreateVase(request):
 
     vase = Vase()
     editor = STLEditor()
-    """
-    if json_data["type"] == "helix":
-        stl_text = editor.output_face_list(face_list=vase.simple_helix_vase())
-    elif json_data["type"] == "bulb":
-        stl_text = editor.output_face_list(face_list=vase.simple_bulb_vase())
-    elif json_data["type"] == "braided":
-        stl_text = editor.output_face_list(face_list=vase.simple_braided_vase())
-    """
+
     parsed_data = []
     for item in json_data["helix_list"]:
         for key in item:
@@ -55,6 +51,7 @@ def CreateVase(request):
         parsed_data.append(item)
 
     faces = vase.custom_vase(helix_data=parsed_data)
+
     stl_text = ""
     if len(faces) > 0:
         stl_text = editor.output_face_list(face_list=faces)

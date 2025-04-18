@@ -10,8 +10,13 @@ export default class Gears extends Component {
         super(props);
 
         this.state = {
-            teeth: 10,
-            module: 1,
+            data: {
+                teeth: 10,
+                module: 1,
+                width: 2,
+                xy_inset: 0.2,
+                z_inset: 0.4,
+            },
 
             part_text: '',
             file: null,
@@ -26,10 +31,7 @@ export default class Gears extends Component {
         ajax_wrapper(
             'POST',
             '/api/objects/create_gear/',
-            {
-                teeth: this.state.teeth,
-                module: this.state.module,
-            },
+            this.state.data,
             function (value) {
                 let file = new File([value], 'gear.stl');
                 this.setState({ part_text: value, file: file });
@@ -41,8 +43,7 @@ export default class Gears extends Component {
         console.log(state);
         this.setState(
             {
-                teeth: state['teeth'],
-                module: state['module'],
+                data: state,
                 part_text: '',
             },
             function () {
@@ -65,22 +66,50 @@ export default class Gears extends Component {
                             <div className="simple-card">
                                 <Form
                                     submit={this.submit}
-                                    defaults={this.state}
+                                    defaults={this.state.data}
                                     submit_text="Update"
+                                    submit_className="standoff"
                                 >
-                                    <TextInput
-                                        type="number"
-                                        name="teeth"
-                                        label="Teeth"
-                                        required={true}
-                                    />
-                                    <TextInput
-                                        type="number"
-                                        name="module"
-                                        label="Module"
-                                        required={true}
-                                    />
-                                    <br />
+                                    <div className="row">
+                                        <TextInput
+                                            className="col-6"
+                                            type="number"
+                                            name="teeth"
+                                            label="Teeth"
+                                            required={true}
+                                        />
+                                        <TextInput
+                                            className="col-6"
+                                            type="number"
+                                            name="module"
+                                            label="Module"
+                                            required={true}
+                                        />
+                                        <TextInput
+                                            className="col-6"
+                                            type="number"
+                                            name="width"
+                                            label="Width"
+                                            required={true}
+                                        />
+                                        <TextInput
+                                            className="col-6"
+                                            type="number"
+                                            name="xy_inset"
+                                            label="XY Inset"
+                                            required={true}
+                                        />
+                                        <TextInput
+                                            className="col-6"
+                                            type="number"
+                                            name="z_inset"
+                                            label="Z Inset"
+                                            required={true}
+                                        />
+                                        <div className="col-12">
+                                            <br />
+                                        </div>
+                                    </div>
                                 </Form>
                             </div>
                             <div className="simple-card">

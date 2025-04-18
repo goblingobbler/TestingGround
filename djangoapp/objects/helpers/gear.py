@@ -1,72 +1,12 @@
+import dis
 import math
-from math import pow, sqrt
-
 from PIL import Image, ImageDraw
+
+from objects.helpers.geometry import deg_to_rad, find_circle, euclidain
 
 IMAGE_SCALE = 2000
 
 PRESSURE_ANGLE = 20  # Degrees
-
-
-def deg_to_rad(deg):
-    return deg * (math.pi / 180)
-
-
-def rad_to_deg(rad):
-    return rad * (180 / math.pi)
-
-
-def euclidain(a, b):
-    return math.sqrt(math.pow(a[0] - b[0], 2) + math.pow(a[1] - b[1], 2))
-
-
-def find_circle(x1, y1, x2, y2, x3, y3):
-    x12 = x1 - x2
-    x13 = x1 - x3
-
-    y12 = y1 - y2
-    y13 = y1 - y3
-
-    y31 = y3 - y1
-    y21 = y2 - y1
-
-    x31 = x3 - x1
-    x21 = x2 - x1
-
-    # x1^2 - x3^2
-    sx13 = pow(x1, 2) - pow(x3, 2)
-
-    # y1^2 - y3^2
-    sy13 = pow(y1, 2) - pow(y3, 2)
-
-    sx21 = pow(x2, 2) - pow(x1, 2)
-    sy21 = pow(y2, 2) - pow(y1, 2)
-
-    f = ((sx13) * (x12) + (sy13) * (x12) + (sx21) * (x13) + (sy21) * (x13)) / (
-        2 * ((y31) * (x12) - (y21) * (x13))
-    )
-
-    g = ((sx13) * (y12) + (sy13) * (y12) + (sx21) * (y13) + (sy21) * (y13)) / (
-        2 * ((x31) * (y12) - (x21) * (y13))
-    )
-
-    c = -pow(x1, 2) - pow(y1, 2) - 2 * g * x1 - 2 * f * y1
-
-    # eqn of circle be x^2 + y^2 + 2*g*x + 2*f*y + c = 0
-    # where centre is (h = -g, k = -f) and
-    # radius r as r^2 = h^2 + k^2 - c
-    h = -g
-    k = -f
-    sqr_of_r = h * h + k * k - c
-
-    # r is the radius
-    r = sqrt(sqr_of_r)
-
-    # print("Centre = (", h, ", ", k, ")");
-    # print("Radius = ", r);
-
-    return [h, k], r
-
 
 # https://geargenerator.com/
 
@@ -76,11 +16,24 @@ GEAR_INSIDE_POINTS = 20
 
 
 class Gear:
-    def __init__(self, teeth=10, module=1):
+    def __init__(
+        self,
+        teeth=10,
+        module=1,
+        width=2,
+        xy_inset=0,
+        z_inset=0,
+    ):
         self.teeth = teeth
+        self.module = module
+        self.width = width
+        self.xy_inset = xy_inset
+        self.z_inset = z_inset
+
+        # print("chamfer", self.xy_inset, self.z_inset)
+
         self.teeth_angle = (2 * math.pi) / self.teeth
 
-        self.module = module
         self.pitch = self.module * math.pi
         self.pressure_angle = deg_to_rad(PRESSURE_ANGLE)
 
@@ -103,60 +56,57 @@ class Gear:
 
         # print(self.tip_radius, self.radius, self.base_radius, self.root_radius)
 
-    def build(
-        self,
-        width=2,
-        scale=0.9,
-    ):
+    def build(self):
 
         points = self.gear_points()
         scaled_points = []
         center_point = self.get_center_point(points)
 
-        gear_points, chamfer_offset = self.scale_about_point(
-            points[GEAR_INSIDE_POINTS : len(points) - GEAR_INSIDE_POINTS], center_point
+        gear_points = self.scale_about_point(
+            points[GEAR_INSIDE_POINTS : len(points) - GEAR_INSIDE_POINTS],
+            center_point,
+            inset=self.xy_inset,
         )
-        first_fillet, trash = self.scale_about_point(
+        first_fillet = self.scale_about_point(
             points[0:GEAR_INSIDE_POINTS],
             [0, 0],
             center_point,
-            max_offset=chamfer_offset,
+            inset=self.xy_inset,
         )
-        second_fillet, trash = self.scale_about_point(
+        second_fillet = self.scale_about_point(
             points[len(points) - GEAR_INSIDE_POINTS :],
             center_point,
             [0, 0],
-            max_offset=chamfer_offset,
+            inset=self.xy_inset,
         )
-
-        chamfer_offset = chamfer_offset * 2
 
         scaled_points = first_fillet + gear_points + second_fillet
 
-        faces = self.make_gear_faces(scaled_points, z_position=width / 2)
+        faces = self.make_gear_faces(scaled_points, z_position=self.width / 2)
         second_faces = self.make_gear_faces(
-            scaled_points, z_position=-1 * width / 2, reverse=True
+            scaled_points, z_position=-1 * self.width / 2, reverse=True
         )
         faces.extend(second_faces)
 
-        print("chamfer_offset", chamfer_offset)
-
         faces.extend(
             self.bridge_faces(
                 points,
-                width / 2 - chamfer_offset,
+                self.width / 2 - self.z_inset,
                 points,
-                -1 * width / 2 + chamfer_offset,
+                -1 * self.width / 2 + self.z_inset,
             )
         )
         faces.extend(
             self.bridge_faces(
-                scaled_points, width / 2, points, width / 2 - chamfer_offset
+                scaled_points, self.width / 2, points, self.width / 2 - self.z_inset
             )
         )
         faces.extend(
             self.bridge_faces(
-                points, -1 * width / 2 + chamfer_offset, scaled_points, -1 * width / 2
+                points,
+                -1 * self.width / 2 + self.z_inset,
+                scaled_points,
+                -1 * self.width / 2,
             )
         )
 
@@ -173,7 +123,7 @@ class Gear:
 
         return center
 
-    def scale_about_point(self, points, center, final=None, scale=0.7, max_offset=None):
+    def scale_about_point(self, points, center, final=None, inset=0):
         working_center = [center[0], center[1]]
 
         scaled_points = []
@@ -191,16 +141,17 @@ class Gear:
             ]
 
         for point in points:
+            working_inset = inset
             diff = [point[0] - working_center[0], point[1] - working_center[1]]
 
+            distance = euclidain([0, 0], diff)
+            if working_inset > distance:
+                working_inset = distance
+
             scale_amount = [
-                diff[0] * (1 - scale),
-                diff[1] * (1 - scale),
+                diff[0] * (working_inset / distance),
+                diff[1] * (working_inset / distance),
             ]
-            distance = euclidain([0, 0], scale_amount)
-            if max_offset:
-                scale_amount[0] = scale_amount[0] * (max_offset / distance)
-                scale_amount[1] = scale_amount[1] * (max_offset / distance)
 
             avg_diff[0] += abs(scale_amount[0])
             avg_diff[1] += abs(scale_amount[1])
@@ -219,7 +170,7 @@ class Gear:
         avg_diff[1] = avg_diff[1] / len(points)
         chamfer_offset = euclidain([0, 0], avg_diff)
 
-        return scaled_points, chamfer_offset
+        return scaled_points
 
     def bridge_faces(self, top_points, top_z, bottom_points, bottom_z):
         faces = []

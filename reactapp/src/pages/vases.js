@@ -19,8 +19,8 @@ const VASE_EXAMPLES = {
             circle_points: 8,
             ossilation: 1.5,
             ossilation_steps: 48,
-            ossilation_start: 1.57,
-            rotation_about_self: 6.28,
+            ossilation_start: 90,
+            rotation_about_self: 360,
             rotation_reverse: false,
         },
         {
@@ -29,7 +29,7 @@ const VASE_EXAMPLES = {
             polar_angle: 0,
             steps: 50,
             height: 20,
-            rotation_about_center: 3.14159,
+            rotation_about_center: 180,
             reverse: false,
             circle_radius: 2,
             circle_points: 8,
@@ -39,10 +39,10 @@ const VASE_EXAMPLES = {
         {
             show: true,
             radial_distance: 4.2,
-            polar_angle: 3.14159,
+            polar_angle: 180,
             steps: 50,
             height: 20,
-            rotation_about_center: 3.14159,
+            rotation_about_center: 180,
             reverse: false,
             circle_radius: 2,
             circle_points: 8,
@@ -52,10 +52,10 @@ const VASE_EXAMPLES = {
         {
             show: true,
             radial_distance: 4.2,
-            polar_angle: -1.57,
+            polar_angle: -90,
             steps: 50,
             height: 20,
-            rotation_about_center: 3.14159,
+            rotation_about_center: 180,
             reverse: false,
             circle_radius: 2,
             circle_points: 8,
@@ -65,10 +65,10 @@ const VASE_EXAMPLES = {
         {
             show: true,
             radial_distance: 4.2,
-            polar_angle: 1.57,
+            polar_angle: 90,
             steps: 50,
             height: 20,
-            rotation_about_center: 3.14159,
+            rotation_about_center: 180,
             reverse: false,
             circle_radius: 2,
             circle_points: 8,
@@ -83,7 +83,7 @@ const VASE_EXAMPLES = {
             polar_angle: 0,
             steps: 48,
             height: 19.2,
-            rotation_about_center: 3.14159,
+            rotation_about_center: 180,
             reverse: false,
             circle_radius: 5,
             circle_points: 24,
@@ -103,7 +103,7 @@ const VASE_EXAMPLES = {
             circle_points: 24,
             ossilation: 2,
             ossilation_steps: 48,
-            ossilation_start: 1.57,
+            ossilation_start: 90,
             rotation_reverse: false,
         },
     ],
@@ -116,7 +116,7 @@ const BRAIDED_CHILDREN = [
         polar_angle: 0,
         steps: 48,
         height: 19.2,
-        rotation_about_center: 3.14159,
+        rotation_about_center: 180,
         reverse: false,
         circle_radius: 2,
         circle_points: 24,
@@ -128,7 +128,7 @@ const BRAIDED_CHILDREN = [
         polar_angle: 0,
         steps: 48,
         height: 19.2,
-        rotation_about_center: 3.14159,
+        rotation_about_center: 180,
         reverse: true,
         circle_radius: 2,
         circle_points: 24,
@@ -137,13 +137,13 @@ const BRAIDED_CHILDREN = [
 ];
 
 let polar_angle = 0;
-while (polar_angle < 2 * Math.PI) {
+while (polar_angle < 360) {
     for (let item of BRAIDED_CHILDREN) {
         VASE_EXAMPLES['braided'].push(
             Object.assign({}, item, { polar_angle: polar_angle }),
         );
     }
-    polar_angle += Math.PI / 4;
+    polar_angle += 45;
 }
 
 const BULB_CHILDREN = [
@@ -159,19 +159,19 @@ const BULB_CHILDREN = [
         circle_points: 24,
         ossilation: 2,
         ossilation_steps: 48,
-        ossilation_start: 4.712,
+        ossilation_start: 270,
         rotation_reverse: false,
     },
 ];
 
 polar_angle = 0;
-while (polar_angle < 2 * Math.PI) {
+while (polar_angle < 360) {
     for (let item of BULB_CHILDREN) {
         VASE_EXAMPLES['bulb'].push(
             Object.assign({}, item, { polar_angle: polar_angle }),
         );
     }
-    polar_angle += Math.PI / 4;
+    polar_angle += 45;
 }
 
 const HELIX_DEFAULT = {
