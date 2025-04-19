@@ -16,6 +16,7 @@ export default class Gears extends Component {
                 width: 2,
                 xy_inset: 0.2,
                 z_inset: 0.4,
+                shaft_width: 2,
             },
 
             part_text: '',
@@ -104,6 +105,13 @@ export default class Gears extends Component {
                                             type="number"
                                             name="z_inset"
                                             label="Z Inset"
+                                            required={true}
+                                        />
+                                        <TextInput
+                                            className="col-6"
+                                            type="number"
+                                            name="shaft_width"
+                                            label="Shaft Width"
                                             required={true}
                                         />
                                         <div className="col-12">

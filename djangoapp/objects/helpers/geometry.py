@@ -13,6 +13,26 @@ def euclidain(a, b):
     return math.sqrt(math.pow(a[0] - b[0], 2) + math.pow(a[1] - b[1], 2))
 
 
+def get_middle_point(a, b):
+    return [
+        a[0] + (b[0] - a[0]) / 2,
+        a[1] + (b[1] - a[1]) / 2,
+    ]
+
+
+def get_closest_point(target, points):
+    closest_distance = 0
+    closest_point = None
+
+    for point in points:
+        distance = euclidain(target, point)
+        if not closest_point or distance < closest_distance:
+            closest_point = point
+            closest_distance = distance
+
+    return closest_point
+
+
 def find_circle(x1, y1, x2, y2, x3, y3):
     x12 = x1 - x2
     x13 = x1 - x3

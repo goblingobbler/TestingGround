@@ -20,6 +20,7 @@ def CreateGear(request):
         width=float(json_data.get("width", 2)),
         xy_inset=float(json_data.get("xy_inset", 0)),
         z_inset=float(json_data.get("z_inset", 0)),
+        shaft_width=float(json_data.get("shaft_width", 0)),
     )
 
     editor = STLEditor()
