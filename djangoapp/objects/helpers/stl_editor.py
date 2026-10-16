@@ -49,6 +49,9 @@ endsolid test-object""" % (
     def output_face_list(self, face_list, filename=None):
         faces = []
         for point_list in face_list:
+            if not point_list:
+                continue
+            
             verticies = []
 
             for point in point_list:
