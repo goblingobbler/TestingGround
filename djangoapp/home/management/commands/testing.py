@@ -1,18 +1,20 @@
-from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Q, Prefetch, Count, Sum, Avg, Max, F
+import os
 
-from home.models import *
-from user.models import *
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
+from objects.helpers.puzzle import Puzzle
+from objects.helpers.stl_editor import STLEditor
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        user = User.objects.get(
-            email="dmiller89@gmail.com",
-        )
-        user.is_staff = True
-        user.set_password("admin")
-        user.save()
+        puzzle = Puzzle()
+        editor = STLEditor()
 
-        print(user)
+        outer = puzzle.make_outer_cylinder()
+        stl_text = editor.output_face_list(outer)
+
+        filepath = os.path.join(settings.BASE_DIR, f"home/output/test.stl")
+        with open(filepath, "w", newline="") as file:
+            file.write(stl_text)
