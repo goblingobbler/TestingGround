@@ -7,18 +7,18 @@ from objects.helpers.puzzle import Puzzle
 from objects.helpers.stl_editor import STLEditor
 
 DEBUG_PUZZLE = [
+    ["blank", "blank", "center", "blank"],
     ["blank", "blank", "blank", "blank"],
+    ["blank", "blank", "center", "blank"],
     ["blank", "blank", "blank", "blank"],
-    ["blank", "blank", "blank", "blank"],
-    ["blank", "blank", "blank", "blank"],
-    ["blank", "center", "blank", "center"],
+    ["blank", "blank", "center", "blank"],
 ]
 
 TEST_PUZZLE = [
-    ["blank", "up_down_right", "horizontal", "blank"],
-    ["down_right", "up_left", "blank", "blank"],
-    ["vertical", "blank", "blank", "blank"],
-    ["up_left", "blank", "blank", "down_left_right"],
+    ["blank", "up_right", "down_left_right", "left"],
+    ["down_right", "left_right", "up_left", "blank"],
+    ["up_down", "blank", "blank", "blank"],
+    ["up_left", "blank", "right", "down_left_right"],
     ["blank", "blank", "down_right", "up_left"],
 ]
 
@@ -29,7 +29,7 @@ class Command(BaseCommand):
         puzzle = Puzzle()
         editor = STLEditor()
 
-        paths = DEBUG_PUZZLE
+        paths = TEST_PUZZLE
         faces = puzzle.build_puzzle(paths)
         stl_text = editor.output_face_list(faces)
 
