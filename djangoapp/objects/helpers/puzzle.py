@@ -7,8 +7,8 @@ class Puzzle:
     def __init__(
         self,
         inner_radius=4,
-        middle_radius=8,
-        outer_radius=10,
+        middle_radius=6,
+        outer_radius=7,
         rotation_steps=4,
         vertical_steps=5,
         key_size=6,
