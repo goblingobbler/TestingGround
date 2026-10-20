@@ -6,9 +6,9 @@ from objects.helpers.circle import Circle
 class Puzzle:
     def __init__(
         self,
-        inner_radius=8,
-        middle_radius=13,
-        outer_radius=15,
+        inner_radius=4,
+        middle_radius=8,
+        outer_radius=10,
         rotation_steps=4,
         vertical_steps=5,
         key_size=6,
@@ -245,7 +245,7 @@ class Segment:
             pass
 
         self.fill_gaps()
-        
+
         return self.faces + self.side_faces
 
     def move_square(self, i, j):
@@ -260,9 +260,9 @@ class Segment:
                 point[0] *= self.radial_ratio
                 point[1] *= self.radial_ratio
 
-                moved_point['new'] = list(point)
+                moved_point["new"] = list(point)
                 moved_points.append(moved_point)
-                
+
             moved_faces.append(moved_points)
 
         return moved_faces
@@ -278,9 +278,9 @@ class Segment:
     def line_is_horizontal(self, point_a, point_b):
         if point_a[2] == point_b[2]:
             return True
-        
+
         return False
-    
+
     def line_is_vertical(self, point_a, point_b):
         if point_a[0] == point_b[0] and point_a[1] == point_b[1]:
             return True
@@ -289,42 +289,83 @@ class Segment:
 
     def fill_gaps(self):
         corner_point = None
-        if self.type == 'up_left':
-            corner_point = self.get_point(self.middle_radius, 1, -1 * self.starting_height - self.height_step)
-            self.side_faces.append([
-                corner_point,
-                self.get_point(self.inner_radius, 1, -1 * self.starting_height - self.height_step),
-                self.get_point(self.middle_radius, 1, -1 * self.starting_height - self.height_step * 2)
-            ])
-        elif self.type == 'up_right':
-            corner_point = self.get_point(self.middle_radius, self.steps_to_points - 1, -1 * self.starting_height - self.height_step)
-            self.side_faces.append([
-                corner_point,
-                self.get_point(self.middle_radius, self.steps_to_points - 1, -1 * self.starting_height - self.height_step * 2),
-                self.get_point(self.inner_radius, self.steps_to_points - 1, -1 * self.starting_height - self.height_step)
-            ])
+        if self.type == "up_left":
+            corner_point = self.get_point(
+                self.middle_radius, 1, -1 * self.starting_height - self.height_step
+            )
+            self.side_faces.append(
+                [
+                    corner_point,
+                    self.get_point(
+                        self.inner_radius,
+                        1,
+                        -1 * self.starting_height - self.height_step,
+                    ),
+                    self.get_point(
+                        self.middle_radius,
+                        1,
+                        -1 * self.starting_height - self.height_step * 2,
+                    ),
+                ]
+            )
+        elif self.type == "up_right":
+            corner_point = self.get_point(
+                self.middle_radius,
+                self.steps_to_points - 1,
+                -1 * self.starting_height - self.height_step,
+            )
+            self.side_faces.append(
+                [
+                    corner_point,
+                    self.get_point(
+                        self.middle_radius,
+                        self.steps_to_points - 1,
+                        -1 * self.starting_height - self.height_step * 2,
+                    ),
+                    self.get_point(
+                        self.inner_radius,
+                        self.steps_to_points - 1,
+                        -1 * self.starting_height - self.height_step,
+                    ),
+                ]
+            )
 
         remove_points = []
         for face in self.moved_faces:
             last_index = len(face) - 1
             for index in range(len(face)):
-                if not self.point_still_in_segment(face[last_index]["old"]) or not self.point_still_in_segment(face[index]["old"]):
+                if not self.point_still_in_segment(
+                    face[last_index]["old"]
+                ) or not self.point_still_in_segment(face[index]["old"]):
                     pass
-                elif not self.line_is_vertical(face[last_index]["old"], face[index]["old"]) and not self.line_is_horizontal(face[last_index]["old"], face[index]["old"]):
+                elif not self.line_is_vertical(
+                    face[last_index]["old"], face[index]["old"]
+                ) and not self.line_is_horizontal(
+                    face[last_index]["old"], face[index]["old"]
+                ):
                     pass
 
                 else:
-                    if self.line_is_horizontal(face[last_index]["old"], face[index]["old"]):
-                        print('searching chamfer', face[index]["new"][2], -1 * self.starting_height - self.height_step)
+                    if self.line_is_horizontal(
+                        face[last_index]["old"], face[index]["old"]
+                    ):
+                        print(
+                            "searching chamfer",
+                            face[index]["new"][2],
+                            -1 * self.starting_height - self.height_step,
+                        )
 
-                        if face[index]["new"][2] == -1 * self.starting_height - self.height_step:
+                        if (
+                            face[index]["new"][2]
+                            == -1 * self.starting_height - self.height_step
+                        ):
                             # Create chamfer
-                            print('Create chamfer')
+                            print("Create chamfer")
                             remove_points.append(list(face[last_index]["new"]))
                             remove_points.append(list(face[index]["new"]))
                             face[last_index]["new"][2] -= self.height_step
                             face[index]["new"][2] -= self.height_step
-                        
+
                     new_square = self.face_rectangle(
                         face[last_index]["old"],
                         face[index]["old"],
@@ -343,7 +384,7 @@ class Segment:
                 if point in remove_points:
                     self.faces[index] = None
                     break
-        
+
         for index in range(len(self.side_faces)):
             for point in self.side_faces[index]:
                 if point == corner_point:
@@ -364,12 +405,12 @@ class Segment:
             for j in self.segment_points():
                 if j in self.middle_square and i > max(self.middle_square):
                     self.moved_faces.extend(self.move_square(i, j))
-    
+
     def move_bottom(self):
         for i in self.segment_points():
             for j in self.segment_points():
                 if j in self.middle_square and i < min(self.middle_square):
-                    print('move_bottom')
+                    print("move_bottom")
                     self.moved_faces.extend(self.move_square(i, j))
 
     def move_left(self):
@@ -377,7 +418,7 @@ class Segment:
             for j in self.segment_points():
                 if j < min(self.middle_square) and i in self.middle_square:
                     self.moved_faces.extend(self.move_square(i, j))
-    
+
     def move_right(self):
         for i in self.segment_points():
             for j in self.segment_points():
@@ -386,18 +427,26 @@ class Segment:
 
     def make_blank_segment(self):
 
-        print('height steps')
-        print(self.max_height, self.starting_height, int((self.max_height - self.starting_height) / self.height_step))
+        print("height steps")
+        print(
+            self.max_height,
+            self.starting_height,
+            int((self.max_height - self.starting_height) / self.height_step),
+        )
 
         faces = []
-        for increment in range(int((self.max_height - self.starting_height) / self.height_step)):
+        for increment in range(
+            int((self.max_height - self.starting_height) / self.height_step)
+        ):
             height = self.starting_height + increment * self.height_step
 
             for k in range(1, self.steps_to_points + 1):
                 faces.extend(
                     self.make_square(
-                        self.get_point(self.inner_radius, k-1, -1 * height),
-                        self.get_point(self.inner_radius, k, -1 * (height + self.height_step))
+                        self.get_point(self.inner_radius, k - 1, -1 * height),
+                        self.get_point(
+                            self.inner_radius, k, -1 * (height + self.height_step)
+                        ),
                     )
                 )
 
@@ -409,7 +458,7 @@ class Segment:
         return [
             radius * math.sin(self.starting_angle + self.angle_step * steps),
             radius * math.cos(self.starting_angle + self.angle_step * steps),
-            height
+            height,
         ]
 
     def make_square(self, start, end):
